@@ -1,0 +1,2378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Let's design the interface for the test!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-snap-type:y mandatory;overflow-x:hidden}
+
+:root{
+  --black:#1a1a1a;
+  --gray-700:#374151;
+  --gray-500:#6b7280;
+  --gray-400:#9ca3af;
+  --gray-300:#d1d5db;
+  --gray-200:#e5e7eb;
+  --gray-100:#f3f4f6;
+  --gray-50:#f9fafb;
+  --white:#ffffff;
+  --p1-tint:#eff6ff; --p1-border:#bfdbfe; --p1-ink:#1d4ed8;
+  --p2-tint:#fffbeb; --p2-border:#fde68a; --p2-ink:#b45309;
+  --p3-tint:#f0fdf4; --p3-border:#a7f3d0; --p3-ink:#065f46;
+  --nav-w:210px;
+  --font:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --mono:'SF Mono','Fira Code','Consolas',monospace;
+}
+
+body{font-family:var(--font);background:var(--white);color:var(--black);display:flex;min-height:100vh}
+
+/* ── NAV TOGGLE BUTTON ────────────────────────── */
+.nav-toggle{position:fixed;top:.9rem;left:.9rem;z-index:300;width:34px;height:34px;background:var(--white);border:1.5px solid var(--gray-200);border-radius:7px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:0;transition:left .28s ease,box-shadow .15s}
+.nav-toggle:hover{box-shadow:0 2px 8px rgba(0,0,0,.09);border-color:var(--gray-400)}
+.nav-toggle span{display:block;width:14px;height:1.8px;background:var(--black);border-radius:1px;transition:transform .2s,opacity .2s}
+.nav-toggle.is-open{left:calc(var(--nav-w) + .9rem)}
+.nav-toggle.is-open span:nth-child(1){transform:translateY(5.8px) rotate(45deg)}
+.nav-toggle.is-open span:nth-child(2){opacity:0}
+.nav-toggle.is-open span:nth-child(3){transform:translateY(-5.8px) rotate(-45deg)}
+
+/* ── NAV ──────────────────────────────────────── */
+#nav{width:var(--nav-w);position:fixed;top:0;left:0;height:100vh;background:var(--white);border-right:1px solid var(--gray-200);overflow-y:auto;z-index:200;display:flex;flex-direction:column;transform:translateX(-100%);transition:transform .28s ease}
+#nav.is-open{transform:translateX(0)}
+.nav-logo{padding:1.4rem 1.1rem 1.1rem;border-bottom:1px solid var(--gray-200)}
+.nav-logo h2{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.18em;color:var(--gray-400);margin-bottom:.2rem}
+.nav-logo p{font-size:.7rem;color:var(--gray-500);line-height:1.45}
+.nav-group{padding:.9rem 0 .25rem}
+.nav-group-lbl{padding:0 1.1rem;font-size:.57rem;font-weight:700;text-transform:uppercase;letter-spacing:.18em;color:var(--gray-300);margin-bottom:.35rem}
+.nav-link{display:block;padding:.37rem 1.1rem;font-size:.73rem;color:var(--gray-500);text-decoration:none;border-left:2px solid transparent;transition:.12s}
+.nav-link.sub{padding-left:1.85rem;font-size:.67rem}
+.nav-link:hover{color:var(--black);background:var(--gray-50)}
+.nav-link.active{color:var(--black);border-left-color:var(--black);font-weight:600;background:var(--gray-50)}
+
+/* ── LAYOUT ───────────────────────────────────── */
+#main{margin-left:0;flex:1;min-width:0;transition:margin-left .28s ease}
+#main.nav-open{margin-left:var(--nav-w)}
+.chapter{display:flex;min-height:100vh}
+.col-text{width:50%;flex-shrink:0;background:var(--white);border-right:1px solid var(--gray-200)}
+.col-viz{width:50%;position:sticky;top:0;height:100vh;flex-shrink:0;overflow:hidden;display:flex;flex-direction:column;background:var(--white)}
+
+/* ── HERO ─────────────────────────────────────── */
+/* ── HERO (full-screen cover) ─────────────────── */
+#hero{height:100vh;display:flex;flex-direction:column;background:var(--white);border-bottom:1px solid var(--gray-200);position:relative;overflow:hidden;scroll-snap-align:start}
+.hero-inner{flex:1;display:flex;align-items:center;gap:.5rem;padding:0 3rem;max-width:1400px;width:100%;margin:0 auto}
+.hero-left{flex:1;min-width:0}
+.hero-eyebrow{font-size:.64rem;font-weight:700;text-transform:uppercase;letter-spacing:.22em;color:var(--gray-400);margin-bottom:1.3rem}
+.hero-left h1{font-family:'Caveat',cursive;font-size:5.8rem;font-weight:700;line-height:1.0;letter-spacing:-.01em;margin-bottom:1rem;color:var(--black)}
+.hero-left p{font-size:.96rem;line-height:1.8;color:var(--gray-500);max-width:520px;margin-bottom:2rem}
+.hero-parts{display:grid;grid-template-columns:repeat(3,1fr);gap:.85rem;margin-bottom:2.2rem}
+.hero-part{padding:.9rem 1rem;border:1.5px solid var(--gray-200);border-radius:8px;cursor:pointer;text-decoration:none;display:block;transition:border-color .15s,box-shadow .15s}
+.hero-part:hover{border-color:var(--gray-400);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.hero-part-num{font-size:.57rem;font-weight:700;text-transform:uppercase;letter-spacing:.15em;color:var(--gray-400);margin-bottom:.32rem}
+.hero-part-title{font-size:.9rem;font-weight:700;color:var(--black);margin-bottom:.28rem}
+.hero-part-desc{font-size:.72rem;color:var(--gray-500);line-height:1.5}
+.hero-part-tags{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.32rem}
+.hero-part-tag{font-size:.58rem;color:var(--gray-500);background:var(--gray-50);border:1px solid var(--gray-200);border-radius:3px;padding:.12rem .42rem;font-weight:500}
+.hero-cta{display:inline-flex;align-items:center;gap:.4rem;background:var(--black);color:var(--white);padding:.72rem 1.8rem;border-radius:6px;font-size:.88rem;font-weight:700;text-decoration:none;transition:background .15s}
+.hero-cta:hover{background:var(--gray-700)}
+.hero-illus{flex:1 1 680px;min-width:0;max-width:680px;opacity:.92}
+.hero-illus img{width:100%;height:auto;display:block;border-radius:10px}
+.hero-scroll{position:absolute;bottom:1.4rem;left:50%;transform:translateX(-50%);font-size:.62rem;font-weight:600;text-transform:uppercase;letter-spacing:.18em;color:var(--gray-300);display:flex;flex-direction:column;align-items:center;gap:.3rem}
+.hero-scroll svg{animation:scrollbob .9s ease-in-out infinite alternate}
+
+/* ── STEP CARDS (sequence layout) ─────────────── */
+.step-cards{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:start;gap:0}
+.step-connector{display:flex;align-items:flex-start;padding-top:2.6rem;padding-left:.3rem;padding-right:.3rem}
+.step-connector svg{display:block;flex-shrink:0}
+.step-card{display:block;text-decoration:none;color:inherit;border:1.5px solid var(--gray-200);border-radius:10px;padding:1.4rem 1.25rem 1.2rem;background:var(--white);cursor:pointer;transition:border-color .18s,box-shadow .18s,transform .15s;position:relative}
+.step-card:hover{border-color:var(--black);box-shadow:0 8px 28px rgba(0,0,0,.09);transform:translateY(-4px)}
+/* large circle badge showing step number */
+.step-badge{width:48px;height:48px;border-radius:50%;border:2px solid var(--black);display:flex;align-items:center;justify-content:center;margin-bottom:1rem;font-family:'Caveat',cursive;font-size:1.6rem;font-weight:700;color:var(--black);flex-shrink:0}
+.step-card:nth-child(1) .step-badge{background:var(--black);color:var(--white)}
+.step-card:nth-child(5) .step-badge{background:var(--black);color:var(--white);opacity:.75}
+.step-label{font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.2em;color:var(--gray-400);margin-bottom:.3rem}
+.step-title{font-size:.9rem;font-weight:700;color:var(--black);line-height:1.4;margin-bottom:.75rem}
+.step-tags{display:flex;flex-wrap:wrap;gap:.28rem}
+.stag{font-size:.58rem;color:var(--gray-400);background:var(--gray-50);border:1px solid var(--gray-200);border-radius:3px;padding:.1rem .4rem;font-weight:500}
+
+/* ── ILLUSTRATION ANIMATIONS ───────────────────── */
+@keyframes floatQ{0%,100%{transform:translateY(0);opacity:.55}50%{transform:translateY(-14px);opacity:.08}}
+@keyframes floatGent{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes blinkCur{0%,100%{opacity:1}50%{opacity:0}}
+@keyframes personBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes scrollbob{from{transform:translateY(0)}to{transform:translateY(4px)}}
+.illus-q1{animation:floatQ 3.2s ease-in-out infinite}
+.illus-q2{animation:floatQ 3.2s ease-in-out infinite .9s}
+.illus-q3{animation:floatQ 3.2s ease-in-out infinite 1.8s}
+.illus-float1{animation:floatGent 4s ease-in-out infinite}
+.illus-float2{animation:floatGent 4s ease-in-out infinite 1.4s}
+.illus-float3{animation:floatGent 4s ease-in-out infinite 2.8s}
+.illus-cursor{animation:blinkCur 1.1s step-end infinite}
+.illus-person{animation:personBob 5s ease-in-out infinite}
+
+/* ── SECTION BREAK DIVIDER ─────────────────────── */
+.sec-break{padding:1.2rem 2.5rem;background:var(--gray-50);border-top:2px solid var(--gray-200);border-bottom:1px solid var(--gray-200)}
+.sec-break-inner{display:flex;align-items:center;gap:.75rem}
+.sec-break-rule{flex:1;height:1px;background:var(--gray-200)}
+.sec-break-lbl{font-size:.57rem;font-weight:700;text-transform:uppercase;letter-spacing:.22em;color:var(--gray-400);white-space:nowrap;padding:0 .15rem}
+
+/* ── DIVIDER ──────────────────────────────────── */
+.divider{height:1px;background:var(--gray-200)}
+
+/* ── CHAPTER HEADER ───────────────────────────── */
+.lo-tag{display:inline-block;padding:.16rem .5rem;border-radius:3px;font-size:.6rem;font-weight:600;letter-spacing:.05em;border:1px solid var(--gray-200);color:var(--gray-500);background:var(--gray-50)}
+
+/* ── PART TITLE SLIDE (chapter divider + intro) ── */
+.part-title{height:100vh;display:flex;overflow-y:auto;scroll-snap-align:start;color:var(--black)}
+.pt-inner{margin:auto;width:100%;max-width:640px;padding:3rem 2rem;text-align:center}
+.pt-eyebrow{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.34em;opacity:.65;margin-bottom:1rem}
+.pt-title-main{font-family:'Caveat',cursive;font-size:3.1rem;font-weight:700;line-height:1.15;letter-spacing:-.01em;margin-bottom:1.1rem}
+.pt-lead{font-size:1.05rem;font-weight:500;line-height:1.75;opacity:.85;margin-bottom:1.4rem}
+.pt-scroll{margin-top:1.8rem;font-size:.6rem;font-weight:600;text-transform:uppercase;letter-spacing:.18em;opacity:.55}
+.part-title .lo-box{text-align:left;background:rgba(255,255,255,.6);border-color:rgba(255,255,255,.8)}
+.part-title.pt-p1{background:linear-gradient(160deg,var(--p1-tint),var(--p1-border))}
+.part-title.pt-p2{background:linear-gradient(160deg,var(--p2-tint),var(--p2-border))}
+.part-title.pt-p3{background:linear-gradient(160deg,var(--p3-tint),var(--p3-border))}
+.part-title.pt-final{background:linear-gradient(160deg,var(--gray-50),var(--gray-200))}
+
+/* ── TEXT SECTIONS ────────────────────────────── */
+.tx-sec{padding:2.25rem 2.5rem;border-bottom:1px solid var(--gray-200);height:100vh;display:flex;overflow-y:auto;scroll-snap-align:start}
+.tx-sec-inner{width:100%;margin:auto}
+.tx-sec h3{font-size:1.08rem;font-weight:700;margin-bottom:.8rem;display:flex;align-items:center;gap:.5rem}
+.step-dot{width:21px;height:21px;border-radius:50%;border:1.5px solid var(--black);display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;flex-shrink:0}
+.tx-sec p{font-size:.96rem;line-height:1.85;color:var(--gray-500);margin-bottom:.95rem}
+.tx-sec p:last-child{margin-bottom:0}
+.tx-sec ul{font-size:.96rem;line-height:2.1;color:var(--gray-500);padding-left:1.3rem}
+.callout{border-radius:4px;padding:.75rem 1rem;margin:1rem 0;font-size:.81rem;line-height:1.65;border:1px solid var(--gray-200);background:var(--gray-50)}
+.callout strong{font-weight:700;color:var(--black)}
+.p1-accent .callout{background:var(--p1-tint);border-color:var(--p1-border)}
+.p2-accent .callout{background:var(--p2-tint);border-color:var(--p2-border)}
+.p3-accent .callout{background:var(--p3-tint);border-color:var(--p3-border)}
+
+/* ── VIZ PANELS ───────────────────────────────── */
+.vp{display:none;flex-direction:column;height:100%;overflow:hidden;background:var(--white)}
+.vp.active{display:flex}
+.viz-lbl{padding:.65rem 1rem .15rem;font-size:.57rem;font-weight:700;text-transform:uppercase;letter-spacing:.18em;color:var(--gray-400);border-bottom:1px solid var(--gray-100)}
+
+/* ── OCEAN (Part 1) ───────────────────────────── */
+#vp-ocean{background:var(--gray-50)}
+#canvas-ocean{flex:1;width:100%;display:block;min-height:0}
+.ocean-bar{background:var(--white);padding:.8rem 1.1rem;display:flex;gap:.6rem;align-items:center;border-top:1px solid var(--gray-200)}
+.ocean-info{font-size:.65rem;color:var(--gray-400);flex:1;text-align:right}
+
+/* ── SCORE (Part 1) ───────────────────────────── */
+#vp-score{background:var(--white)}
+#canvas-score-bg{flex:1;width:100%;display:block;min-height:0;opacity:.18}
+.score-panel{padding:1.1rem 1.4rem;background:var(--white);border-top:1px solid var(--gray-200)}
+.score-lbl{font-size:.57rem;font-weight:700;text-transform:uppercase;letter-spacing:.15em;color:var(--gray-400);margin-bottom:.6rem}
+.eq-row{display:flex;align-items:center;gap:.6rem;margin-bottom:.7rem;flex-wrap:wrap}
+.eq-box{padding:.38rem .7rem;border-radius:4px;font-weight:700;font-size:.78rem;text-align:center;min-width:88px;border:1.5px solid}
+.eq-op{font-size:1.2rem;color:var(--gray-300);font-weight:300}
+.eq-observed{border-color:var(--gray-700);color:var(--gray-700)}
+.eq-true{border-color:var(--p1-border);color:var(--p1-ink);background:var(--p1-tint)}
+.eq-error{border-color:#fca5a5;color:#dc2626;background:#fff5f5}
+.trash-row{display:flex;align-items:center;gap:.65rem;margin-top:.5rem}
+.trash-row label{font-size:.68rem;color:var(--gray-400);white-space:nowrap}
+#trash-slider{flex:1;accent-color:#dc2626;cursor:pointer;height:4px}
+.trash-pct{font-size:.68rem;font-weight:700;color:#dc2626;min-width:28px}
+.validity-msg{font-size:.7rem;margin-top:.6rem;padding:.38rem .65rem;border-radius:4px;border:1px solid;transition:.3s}
+
+/* ── VALIDITY (Part 1) ────────────────────────── */
+#vp-valid{background:var(--white);padding:2rem;justify-content:center}
+.valid-title{font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:.18em;color:var(--gray-400);margin-bottom:.8rem}
+.valid-formula{border:1px solid var(--gray-200);border-radius:6px;padding:.9rem 1rem;background:var(--gray-50);font-family:var(--mono);font-size:.82rem;text-align:center;margin-bottom:1rem;color:var(--gray-700)}
+.valid-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.valid-card{border-radius:5px;padding:.9rem;border:1px solid}
+.valid-card h4{font-size:.65rem;font-weight:700;margin-bottom:.4rem}
+.valid-card p{font-size:.72rem;line-height:1.6}
+.valid-card.good{border-color:var(--p3-border);background:var(--p3-tint);color:var(--p3-ink)}
+.valid-card.bad{border-color:#fca5a5;background:#fff5f5;color:#991b1b}
+.valid-banner{margin-top:.85rem;padding:.8rem 1rem;border-radius:5px;background:var(--gray-50);border:1px solid var(--gray-200);font-size:.76rem;color:var(--gray-700);line-height:1.7}
+
+/* ── COMPLEXITY (Part 2) ──────────────────────── */
+#vp-complex{background:var(--white)}
+.cplx-topbar{border-bottom:1px solid var(--gray-200);padding:.8rem 1.1rem;display:flex;justify-content:space-between;align-items:center}
+.cplx-topbar h4{font-size:.75rem;font-weight:700;color:var(--black)}
+.cplx-topbar span{font-size:.62rem;color:var(--gray-400)}
+.cplx-mock{background:var(--white);border:1px solid var(--gray-200);border-radius:5px;margin:.8rem;flex:1;overflow:auto;min-height:0;position:relative}
+.mock-toolbar{background:var(--gray-50);border-bottom:1px solid var(--gray-200);padding:.28rem .65rem;display:flex;gap:.28rem;flex-wrap:wrap;align-items:center;min-height:26px}
+.tb-btn{padding:.16rem .38rem;font-size:.57rem;border:1px solid var(--gray-200);border-radius:3px;background:var(--white);cursor:pointer;color:var(--gray-500)}
+.mock-body{padding:.9rem}
+.mock-item-hdr{font-size:.58rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--gray-400);margin-bottom:.5rem;padding-bottom:.38rem;border-bottom:1px solid var(--gray-100)}
+.mock-prompt{font-size:.8rem;line-height:1.6;color:var(--gray-600);margin-bottom:.6rem}
+.mock-eq{font-size:1rem;font-weight:700;font-family:var(--mono);margin:.3rem 0;color:var(--black)}
+.mock-input{border:1.5px solid var(--gray-300);border-radius:4px;padding:.28rem .5rem;width:68px;font-size:.85rem;text-align:center;font-family:var(--mono);color:var(--black)}
+.cplx-metrics{background:var(--gray-50);padding:.8rem 1.1rem;display:grid;grid-template-columns:1fr 1fr;gap:.8rem;border-top:1px solid var(--gray-200)}
+.metric-lbl{font-size:.57rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--gray-400);margin-bottom:.28rem}
+.metric-val{font-size:.88rem;font-weight:700;color:var(--black);margin-bottom:.32rem}
+.pbar-bg{height:3px;background:var(--gray-200);border-radius:999px;overflow:hidden}
+.pbar-fill{height:100%;border-radius:999px;transition:width .5s,background .5s;background:var(--black)}
+.cplx-ctrl{padding:.8rem 1.1rem;background:var(--white);border-top:1px solid var(--gray-200)}
+.ctrl-row{display:flex;justify-content:space-between;font-size:.66rem;font-weight:600;color:var(--gray-500);margin-bottom:.38rem}
+input[type=range]#cplx-slider,input[type=range]#cplx-slider-r{width:100%;-webkit-appearance:none;height:3px;border-radius:999px;background:linear-gradient(90deg,#a7f3d0,#fde68a,#fca5a5);outline:none;cursor:pointer}
+input[type=range]#cplx-slider::-webkit-slider-thumb,input[type=range]#cplx-slider-r::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--white);border:1.5px solid var(--gray-400);cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.ctrl-levels{display:flex;justify-content:space-between;font-size:.57rem;color:var(--gray-300);margin-top:.28rem}
+
+/* ── RESULTS (Part 2) ─────────────────────────── */
+#vp-results{background:var(--white)}
+
+/* ── SBAC (Part 3) ────────────────────────────── */
+#vp-sbac-orig,#vp-sbac-ann,#vp-sbac-cmp{background:var(--white)}
+.sbac-wrap{flex:1;margin:.7rem;background:var(--white);border:1px solid var(--gray-200);border-radius:5px;overflow:hidden;display:flex;flex-direction:column}
+.sbac-topbar{background:var(--gray-50);border-bottom:1px solid var(--gray-200);padding:.42rem .9rem;font-size:.68rem;font-weight:600;display:flex;justify-content:space-between;align-items:center;color:var(--black)}
+.sbac-toolbar{background:var(--white);border-bottom:1px solid var(--gray-200);padding:.28rem .7rem;display:flex;gap:.28rem;flex-wrap:wrap;align-items:center}
+.sbac-tb-btn{padding:.18rem .42rem;font-size:.58rem;border:1px solid var(--gray-200);border-radius:3px;background:var(--white);cursor:pointer;color:var(--gray-500)}
+.sbac-body{padding:.8rem;display:flex;gap:.7rem;flex:1;align-items:flex-start}
+.sbac-q{flex:1;font-size:.73rem;line-height:1.65;color:var(--gray-600)}
+.sbac-note{font-size:.6rem;color:var(--gray-400);margin:.45rem 0}
+.sbac-nav{margin-top:.5rem;display:flex;gap:.38rem}
+.sbac-nav-btn{padding:.22rem .6rem;font-size:.62rem;border:1px solid var(--gray-200);border-radius:3px;background:var(--white);cursor:pointer;color:var(--gray-600)}
+
+/* global test toolbar (Part 3 mockup) */
+.sbac-globalbar{display:flex;align-items:center;gap:.4rem;padding:.4rem .6rem;background:var(--gray-50);border-bottom:1px solid var(--gray-200)}
+.gtb-group{display:flex;gap:.32rem;flex-shrink:0}
+.gtb-btn{display:flex;flex-direction:column;align-items:center;gap:.12rem;background:none;border:none;cursor:pointer;padding:0;color:var(--gray-500)}
+.gtb-icon{width:20px;height:20px;border-radius:50%;border:1.5px solid currentColor;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.gtb-icon svg{width:11px;height:11px}
+.gtb-label{font-size:.46rem;line-height:1;white-space:nowrap;color:var(--gray-400)}
+.gtb-green{color:#16a34a}
+.gtb-amber{color:#f59e0b}
+.gtb-gray{color:var(--gray-500)}
+.gtb-progress{flex:1;display:flex;align-items:center;padding:0 .3rem;min-width:24px}
+.gtb-track{flex:1;height:4px;border-radius:999px;background:var(--gray-200);position:relative;overflow:hidden;display:block}
+.gtb-fill{position:absolute;left:0;top:0;bottom:0;width:22%;background:var(--gray-400);border-radius:999px}
+.sbac-globalbar.compact{padding:.28rem .5rem;gap:.25rem}
+.sbac-globalbar.compact .gtb-group{gap:.2rem}
+.sbac-globalbar.compact .gtb-label{display:none}
+.sbac-globalbar.compact .gtb-icon{width:15px;height:15px}
+.sbac-globalbar.compact .gtb-icon svg{width:8px;height:8px}
+
+/* item header */
+.sbac-itemhdr{display:flex;align-items:center;gap:.5rem;padding:.4rem .7rem .25rem}
+.item-num{width:18px;height:18px;background:#1d4ed8;color:#fff;font-size:.64rem;font-weight:700;display:flex;align-items:center;justify-content:center;border-radius:3px;flex-shrink:0}
+.item-progress{flex:1;height:12px;background:var(--gray-100);border-radius:999px;position:relative}
+.item-progress-fill{display:block;height:100%;width:18%;background:var(--gray-300);border-radius:999px}
+.item-progress-icon{position:absolute;right:5px;top:50%;transform:translateY(-50%);font-size:.55rem;color:var(--gray-400);line-height:1}
+.guest-tab{display:inline-block;margin:.3rem .7rem 0;padding:.16rem .8rem;font-size:.58rem;font-weight:700;letter-spacing:.06em;color:var(--gray-600);border-bottom:2px solid var(--black)}
+
+/* question + table (Part 3 mockup) */
+.sbac-body2{display:flex;flex-direction:column;gap:.55rem;padding:.65rem .8rem;flex:1}
+.sbac-q2{font-size:.7rem;line-height:1.6;color:var(--gray-600)}
+.sbac-q2 p{margin:0 0 .4rem}
+.sbac-table{border-collapse:collapse;margin:.45rem 0;font-size:.65rem}
+.sbac-table th,.sbac-table td{border:1px solid var(--gray-300);padding:.18rem .6rem;text-align:center;color:var(--black)}
+.sbac-table th{background:var(--gray-50);font-weight:700;font-style:italic}
+
+/* graph toolbar + answer box */
+.sbac-graph-toolbar{display:flex;align-items:center;gap:.4rem;margin-bottom:.5rem}
+.sbac-xcircle{width:21px;height:21px;border-radius:50%;background:#ef4444;color:#fff;border:none;font-size:.62rem;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;line-height:1}
+.sbac-pill{display:inline-flex;align-items:center;gap:.32rem;padding:.24rem .65rem;border-radius:999px;background:#2563eb;color:#fff;border:1.5px solid #2563eb;font-size:.6rem;font-weight:600;cursor:pointer}
+.sbac-pill.active{background:#1d4ed8;box-shadow:0 0 0 2px #bfdbfe}
+.sbac-pill.tool-on{background:var(--gray-400);border-color:var(--gray-400);color:#fff;box-shadow:none}
+.sbac-pill.tool-on .pill-x,.sbac-pill.tool-on .pill-arrow{color:var(--gray-400)}
+.pill-x,.pill-arrow{display:flex;align-items:center;justify-content:center;width:13px;height:13px;border-radius:50%;background:#fff;font-size:.5rem;font-weight:800;flex-shrink:0}
+.pill-x{color:#dc2626}
+.pill-arrow{color:#2563eb}
+.sbac-graph-wrap{display:flex;flex-direction:column;align-items:center}
+.sbac-answer-box{margin-top:.55rem;height:32px;border:1.5px solid #93c5fd;border-radius:4px;background:#f8fbff}
+
+/* annotations */
+.ann-badge{position:absolute;width:17px;height:17px;border-radius:50%;background:#dc2626;color:#fff;font-size:.57rem;font-weight:800;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10;border:1.5px solid #dc2626}
+.ann-badge.ok{background:#059669;border-color:#059669}
+.ann-tip{position:absolute;background:var(--black);color:#fff;padding:.45rem .65rem;border-radius:5px;font-size:.6rem;line-height:1.55;max-width:148px;z-index:20;display:none;pointer-events:none;box-shadow:0 4px 14px rgba(0,0,0,.18);white-space:normal}
+.ann-badge:hover .ann-tip{display:block}
+
+/* SBAC toggle */
+.sbac-toggle{display:flex;background:var(--gray-100);border-radius:5px;padding:.18rem;margin:.7rem .7rem .22rem;gap:.18rem;border:1px solid var(--gray-200)}
+.stgl-btn{flex:1;padding:.38rem;border:none;border-radius:4px;font-size:.68rem;font-weight:600;cursor:pointer;background:transparent;color:var(--gray-400);transition:.15s}
+.stgl-btn.active{background:var(--white);color:var(--black);box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid var(--gray-200)}
+
+/* Interaction-flow diagram (Part 3, section 2) */
+.flow-wrap{flex:1;overflow:auto;display:flex;align-items:center;justify-content:center;padding:.5rem}
+.fnode{opacity:0;transition:opacity .35s ease}
+.fnode.show{opacity:1}
+
+/* Left-text highlights synced to flowchart steps (s3b) */
+#s3b li{transition:background .35s ease,box-shadow .35s ease;border-radius:4px}
+#s3b li.hl-signifier{background:#fed7aa;box-shadow:0 0 0 .35rem #fed7aa,0 0 0 .42rem #c2410c;color:#9a3412;font-weight:700}
+#s3b li.hl-action{background:#bbf7d0;box-shadow:0 0 0 .35rem #bbf7d0}
+#s3b li.hl-kept{background:#dbeafe;box-shadow:0 0 0 .35rem #dbeafe}
+#s3b .callout{transition:background .35s ease,border-color .35s ease}
+#s3b .callout.hl-problem{background:#fee2e2;border-color:#dc2626}
+#s3b .callout.hl-kept{background:#dbeafe;border-color:#2563eb}
+
+/* improved SBAC */
+.sbac-imp-topbar{background:var(--gray-50);border-bottom:1px solid var(--gray-200);padding:.42rem .9rem;font-size:.68rem;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+.sbac-imp-toolbar{background:var(--white);border-bottom:1px solid var(--gray-200);padding:.28rem .7rem;display:flex;gap:.38rem;align-items:center}
+.sbac-imp-btn{display:inline-flex;align-items:center;gap:.3rem;padding:.18rem .45rem;font-size:.58rem;border:1.5px solid var(--black);border-radius:3px;background:var(--white);cursor:pointer;font-weight:600;color:var(--black)}
+.sbac-imp-btn .pill-arrow{background:var(--black);color:#fff}
+.sbac-imp-btn.active{background:var(--black);color:var(--white)}
+.sbac-imp-btn.active .pill-arrow{background:#fff;color:var(--black)}
+.sbac-imp-ghost{border-color:var(--gray-300);color:var(--gray-500);font-weight:400}
+.sbac-submit{background:var(--black);color:var(--white);border:none;border-radius:4px;padding:.35rem 1rem;font-size:.68rem;font-weight:700;cursor:pointer}
+
+/* buttons */
+.btn{padding:.38rem .95rem;border-radius:4px;font-size:.7rem;font-weight:600;border:1.5px solid;cursor:pointer;transition:.13s;display:inline-flex;align-items:center;gap:.32rem}
+.btn-primary{background:var(--black);color:var(--white);border-color:var(--black)}
+.btn-primary:hover{background:var(--gray-700)}
+.btn-ghost{background:var(--white);color:var(--black);border-color:var(--gray-300)}
+.btn-ghost:hover{background:var(--gray-50)}
+.btn-sm{padding:.27rem .7rem;font-size:.65rem}
+
+/* coord */
+.coord-wrap{flex-shrink:0}
+.coord-hint{font-size:.57rem;color:var(--gray-400);text-align:center;margin-top:.22rem}
+
+/* ── LEARNING OBJECTIVE BOX ──────────────────── */
+.lo-box{margin-top:1.3rem;padding:1rem 1.2rem;background:var(--gray-50);border:1.5px solid var(--gray-200);border-radius:8px}
+.lo-box-title{font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:.18em;color:var(--gray-400);margin-bottom:.45rem}
+.lo-box-lead{font-size:.82rem;color:var(--gray-500);margin-bottom:.7rem;line-height:1.6}
+.lo-chips{display:flex;flex-wrap:wrap;gap:.35rem}
+.lo-chip{font-size:.67rem;font-weight:700;padding:.2rem .6rem;border:1.8px solid var(--black);border-radius:20px;color:var(--black);background:var(--white)}
+
+/* ── GLOSSARY HOVER (popup) ──────────────────── */
+.gloss{border-bottom:1.5px dashed var(--gray-400);cursor:help;font-weight:600}
+#gloss-popup{position:fixed;z-index:900;background:#1a1a1a;color:white;padding:.55rem .8rem;border-radius:7px;font-size:.73rem;line-height:1.6;max-width:290px;pointer-events:none;box-shadow:0 4px 18px rgba(0,0,0,.35);display:none}
+
+/* ── ANALOGY TABLE ───────────────────────────── */
+.analogy-table{margin:1rem 0;border:1.5px solid var(--gray-200);border-radius:8px;overflow:hidden}
+.analogy-row{display:flex;align-items:flex-start;padding:.62rem .9rem;border-bottom:1px solid var(--gray-100);font-size:.81rem;gap:.55rem}
+.analogy-row:last-child{border-bottom:none}
+.analogy-river{flex:0 0 168px;color:var(--gray-600);line-height:1.55}
+.analogy-arrow{flex-shrink:0;color:var(--gray-300);font-size:1rem;padding-top:.05rem}
+.analogy-test{flex:1;font-weight:600;color:var(--black)}
+
+/* ── DIAGRAM WRAPPER ─────────────────────────── */
+.diagram-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.2rem 1.4rem;gap:.9rem;overflow-y:auto}
+.diagram-wrap svg{width:100%;max-width:560px;max-height:100%;height:auto;display:block}
+.diag-zone{cursor:pointer;transition:opacity .13s}
+.diag-zone:hover{opacity:.82}
+.diag-info-box{width:100%;max-width:560px;min-height:52px;background:var(--white);border:1.5px solid var(--gray-200);border-radius:7px;padding:.65rem .85rem;font-size:.79rem;line-height:1.58;color:var(--gray-700);transition:all .18s}
+.diag-info-box strong{color:var(--black);display:block;margin-bottom:.22rem;font-size:.82rem}
+#cl-info{font-size:.98rem;line-height:1.65}
+#cl-info strong{font-size:1.02rem}
+.diag-info-box ul{margin:.2rem 0 0 1.1rem;padding:0}
+.diag-info-box li{margin-bottom:.3rem}
+.diag-placeholder{color:var(--gray-400);font-style:italic}
+.diag-zone.d2-selected rect{stroke-width:3.5;filter:drop-shadow(0 0 3px rgba(0,0,0,.25))}
+.d2-bracket{cursor:default}
+.d2-bracket path{transition:stroke-width .15s}
+.d2-bracket:hover path{stroke-width:3}
+.d2-bracket.d2-clickable{cursor:pointer}
+.d2-bracket.d2-clickable.d2-active path{stroke-width:3}
+.d2-emph{stroke-width:4 !important;filter:drop-shadow(0 0 4px rgba(0,0,0,.3))}
+.d2-text-trigger{cursor:pointer;border-bottom:1.5px dashed currentColor;padding-bottom:1px;transition:opacity .13s}
+.d2-text-trigger:hover{opacity:.7}
+.d2-text-trigger.d2-active{background:rgba(0,0,0,.06);border-radius:3px;padding:0 .15rem}
+#d2-cu,#d2-vm-group,#d2-civ,#d2-error-group{transition:opacity .15s,filter .15s}
+.d2-dim{opacity:.28;filter:grayscale(1)}
+.d2-emph + text, text.d2-emph{font-weight:800}
+
+/* ── RIVER CANVAS ────────────────────────────── */
+#canvas-river{flex:1;width:100%;display:block;min-height:0}
+#canvas-anim{flex:1;width:100%;display:block;min-height:0}
+
+/* ── ANIMATION STEP INDICATORS ───────────────── */
+.anim-step-row{display:flex;align-items:center;gap:.5rem;padding:.3rem .6rem;border-radius:5px;font-size:.79rem;color:var(--gray-400);border-left:2px solid transparent;transition:color .2s,border-color .2s,background .2s}
+.anim-step-row.active{color:var(--black);border-left-color:var(--black);background:var(--gray-50);font-weight:600}
+.anim-dot{width:20px;height:20px;border-radius:50%;border:1.5px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:.58rem;font-weight:700;flex-shrink:0}
+
+/* ── CIV DONUT PANEL ────────────────────────── */
+.donut-panel{flex:1;display:flex;flex-direction:column;padding:1.2rem 1.4rem;gap:.9rem;overflow-y:auto}
+.donut-badge{font-size:.56rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em;padding:.22rem .6rem;border-radius:3px;display:inline-block;transition:background .35s,color .35s}
+.donut-row{display:flex;align-items:center;gap:1.1rem}
+.donut-legend{display:flex;flex-direction:column;gap:.65rem;flex:1}
+.donut-legend-item{display:flex;align-items:flex-start;gap:.52rem}
+.donut-swatch{width:12px;height:12px;border-radius:2px;flex-shrink:0;margin-top:2px}
+.donut-legend-lbl{font-size:.71rem;font-weight:700;color:var(--black);margin-bottom:.1rem}
+.donut-legend-sub{font-size:.64rem;color:var(--gray-500);line-height:1.45;transition:color .3s}
+.donut-desc{font-size:.72rem;line-height:1.6;color:var(--gray-500);padding:.65rem .9rem;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:6px;transition:all .3s}
+.civ-slider-wrap{padding:.85rem 1.2rem;border:1.5px solid var(--gray-200);border-radius:7px;background:var(--white)}
+.civ-slider-row{display:flex;justify-content:space-between;align-items:center;font-size:.65rem;font-weight:600;color:var(--gray-500);margin-bottom:.45rem}
+.civ-lvl-lbl{font-size:.69rem;font-weight:700;color:var(--black)}
+
+/* ── COGNITIVE LOAD BRAIN DIAGRAM ────────────── */
+.cl-zone{cursor:pointer;transition:opacity .25s,filter .25s}
+.cl-zone.cl-dim{opacity:.18;filter:grayscale(1)}
+.cl-zone.cl-active{filter:drop-shadow(0 0 6px rgba(0,0,0,.25))}
+.cl-zone-label{cursor:pointer;transition:opacity .25s,filter .25s}
+.cl-zone-label.cl-dim{opacity:.3;filter:grayscale(1)}
+.cl-zone-label.cl-active text:first-of-type{text-decoration:underline}
+
+/* ── WORKING MEMORY BAR ──────────────────────── */
+.wm-wrap{display:flex;flex-direction:column;gap:.4rem}
+.wm-title{font-size:.72rem;font-weight:700;color:var(--black)}
+.wm-bar{display:flex;width:100%;height:34px;border-radius:6px;overflow:hidden;border:1px solid var(--gray-200)}
+.wm-seg{display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:800;color:#fff;transition:width .35s ease;white-space:nowrap;overflow:hidden}
+.wm-legend{display:flex;gap:1rem;font-size:.66rem;color:var(--gray-500)}
+.wm-legend span{display:inline-flex;align-items:center;gap:.32rem}
+.wm-legend i{width:10px;height:10px;border-radius:2px;display:inline-block}
+
+/* footer */
+#footer{background:var(--gray-50);border-top:1px solid var(--gray-200);color:var(--gray-400);padding:2rem 3rem;text-align:center;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;scroll-snap-align:start}
+#footer p{font-size:.73rem;line-height:1.75}
+</style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══════════════════════════════════ -->
+<nav id="nav">
+  <div class="nav-logo">
+    <h2>EDUC 432</h2>
+    <p>Explorable Explanation<br>Eunjung Myoung · 2026</p>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-lbl">Overview</div>
+    <a href="#hero" class="nav-link" data-sec="hero">Introduction</a>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-lbl">Part 1 — Understand</div>
+    <a href="#p1" class="nav-link" data-sec="p1">What is a Test?</a>
+    <a href="#s1a" class="nav-link sub" data-sec="s1a">① The Analogy</a>
+    <a href="#s1b" class="nav-link sub" data-sec="s1b">② Ocean → Testing</a>
+    <a href="#s1c" class="nav-link sub" data-sec="s1c">③ Domain → Test</a>
+    <a href="#s1d" class="nav-link sub" data-sec="s1d">④ Threats to Interpretability</a>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-lbl">Part 2 — Apply</div>
+    <a href="#p2" class="nav-link" data-sec="p2"> Apply </a>
+    <a href="#s2intro" class="nav-link sub" data-sec="s2intro">① Cognitive Load</a>
+    <a href="#s2a" class="nav-link sub" data-sec="s2a">② UI Complexity</a>
+    <a href="#s2c" class="nav-link sub" data-sec="s2c">③ Why It's a Problem</a>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-lbl">Part 3 — Evaluate</div>
+    <a href="#p3" class="nav-link" data-sec="p3">SBAC Case Study</a>
+    <a href="#s3a" class="nav-link sub" data-sec="s3a">① The Interface</a>
+    <a href="#s3b" class="nav-link sub" data-sec="s3b">② Spot the Problems</a>
+    <a href="#s3c" class="nav-link sub" data-sec="s3c">③ Compare Designs</a>
+  </div>
+</nav>
+
+<!-- ═══ MAIN ═══════════════════════════════════ -->
+<main id="main">
+
+<!-- HERO -->
+<section id="hero">
+
+  <div class="hero-inner">
+    <!-- Left: content + part cards -->
+    <div class="hero-left">
+      <div class="hero-eyebrow">EDUC 432 · Explorable Explanation · Stanford University</div>
+      <h1>Let's design<br>the interface<br>for the test!</h1>
+      <p> I heard that you, as the designer, were asked to design the interface of the computer-based math test! Compared to paper-pencil tests, in computer-based tests, test takers are asked to utilize the mouse to click, drag, and hoover and type with keyboard to interact with the interface and to answer the test items. </br> Do you know what happens to students' scores when your designed interface is too complex or confusing? This explorable walks you  through how test interface decisions directly affect the validity of tests — step by step.</p>
+      <div class="hero-parts">
+        <a href="#p1" onclick="event.preventDefault();document.getElementById('p1').scrollIntoView({behavior:'smooth'});" class="hero-part">
+          <div class="hero-part-num">Part 1 · Understand</div>
+          <div class="hero-part-title">What is a Test? </div>
+          <div class="hero-part-tags">
+            <span class="hero-part-tag">Domain</span>
+            <span class="hero-part-tag">Test </span>
+            <span class="hero-part-tag">Construct</span>
+            <span class="hero-part-tag">Validity</span>
+            <span class="hero-part-tag">Construct irrelevant variance </span>
+          </div>
+        </a>
+        <a href="#p2" onclick="event.preventDefault();document.getElementById('p2').scrollIntoView({behavior:'smooth'});" class="hero-part">
+          <div class="hero-part-num">Part 2 · Apply</div>
+          <div class="hero-part-title">Interface Design in Test </div>
+          <div class="hero-part-tags">
+            <span class="hero-part-tag">Cognitive Load Theory</span>
+             <span class="hero-part-tag">Extraneous Cognitive Load </span>
+              <span class="hero-part-tag">UI Complexity</span>
+          </div>
+        </a>
+        <a href="#p3" onclick="event.preventDefault();document.getElementById('p3').scrollIntoView({behavior:'smooth'});" class="hero-part">
+          <div class="hero-part-num">Part 3 · Evaluate</div>
+          <div class="hero-part-title">The Case Study</div>
+          <div class="hero-part-tags">
+            <span class="hero-part-tag">SBAC Item</span>
+            <span class="hero-part-tag">Redesign</span>
+          </div>
+        </a>
+      </div>
+      <a href="#p1" onclick="event.preventDefault();document.getElementById('p1').scrollIntoView({behavior:'smooth'});" class="hero-cta">Begin →</a>
+    </div>
+
+    <!-- Right: illustration -->
+    <div class="hero-illus" aria-hidden="true">
+      <img src="hero-illustration.png" alt="Illustration of a student at a desk looking at a split-screen math test interface, with a graphing question on the left and a multiple-choice question on the right">
+    </div>
+  </div>
+  <!-- Scroll hint -->
+  <div class="hero-scroll">
+    <span>Scroll to explore</span>
+    <svg width="14" height="18" viewBox="0 0 14 18" fill="none">
+      <path d="M7 1 L7 13 M2 9 L7 13 L12 9" stroke="#d1d5db" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ PART 1 TITLE SLIDE ═════════════════════════ -->
+<div class="part-title pt-p1">
+  <div class="pt-inner">
+    <div class="pt-eyebrow">Chapter 1 of 3 · Part 1</div>
+    <h2 class="pt-title-main">What is a Test, Really?</h2>
+    <p class="pt-lead"> All of us have at least one experience in lifetime of taking tests, and have some idea of what a test is, but let's dig deeper. <br> So — what is a test?</p>
+    <span class="lo-tag">Learning Objective · Understand · Interpret</span>
+    <div class="lo-box">
+      <div class="lo-box-title">Learning Objective</div>
+      <div class="lo-box-lead">By the end of this section, you will understand these key concepts:</div>
+      <div class="lo-chips">
+        <span class="lo-chip">Domain</span>
+        <span class="lo-chip">Test</span>
+        <span class="lo-chip">Construct</span>
+        <span class="lo-chip">Test Score</span>
+        <span class="lo-chip">Validity</span>
+        <span class="lo-chip">Construct-Irrelevant Variance</span>
+      </div>
+    </div>
+    <div class="pt-scroll">↓ Scroll to begin</div>
+  </div>
+</div>
+
+<!-- ═══ PART 1 ═══════════════════════════════════ -->
+<section id="p1" class="chapter p1-accent">
+  <div class="col-text">
+
+    <div id="s1a" class="tx-sec" data-vp="river">
+      <div class="tx-sec-inner">
+        <h3><span class="step-dot">1</span>Let's Start With an Analogy</h3>
+        <p>Imagine you are a scientist studying life in the Pacific Ocean. The water teems with creatures — fish, starfish, squid, and many more. But you are interested in only one thing: the kinds of fish people can actually eat.</p>
+        <p>You want to understand this "edible fish" population, but you cannot observe every single fish in the ocean. So you do what any good scientist does: you cast your net and catch a sample. The fish you catch give you a window into what the whole ocean holds.</p>
+        <p>Testing works <em>exactly</em> the same way. Watch the water on the right — then click <strong>Cast Net</strong> to see what you catch →</p>
+      </div>
+    </div>
+
+    <div id="s1b" class="tx-sec" data-vp="river">
+      <div class="tx-sec-inner">
+        <h3><span class="step-dot">2</span>Mapping the Analogy to Testing</h3>
+        <p>In the Pacific Ocean, you are surrounded by many kinds of sea life — fish, starfish, squid, and more. But as a scientist, you care about only one specific group: the edible fish species people can actually eat. That is your target concept.</p>
+        <p>In testing, we do something similar. We start with a broad domain of knowledge, but we focus on a specific <span class="gloss" data-term="Construct">construct</span> — the concept or characteristic that the test is designed to measure. Then we draw a limited sample of items (like one cast of the net) and use students' scores to reason about the larger domain.</p>
+        <p>Each element of the ocean scenario maps directly onto a core testing concept. Hover the terms below for their definitions:</p>
+        <div class="analogy-table">
+          <div class="analogy-row">
+            <div class="analogy-river">🌊 <strong>The Pacific Ocean</strong></div>
+            <div class="analogy-arrow">→</div>
+            <div class="analogy-test"><span class="gloss" data-term="Domain">Domain</span> — the full body of knowledge</div>
+          </div>
+          <div class="analogy-row">
+            <div class="analogy-river">🐠 <strong>Edible fish species</strong></div>
+            <div class="analogy-arrow">→</div>
+            <div class="analogy-test"><span class="gloss" data-term="Construct">Construct</span> — the specific concept the test is designed to measure</div>
+          </div>
+          <div class="analogy-row">
+            <div class="analogy-river">🎣 <strong>One cast of the net</strong></div>
+            <div class="analogy-arrow">→</div>
+            <div class="analogy-test"><span class="gloss" data-term="Test">Test</span> — a sample drawn from the domain to make inferences</div>
+          </div>
+          <div class="analogy-row">
+            <div class="analogy-river">🐟 <strong>Each fish caught</strong></div>
+            <div class="analogy-arrow">→</div>
+            <div class="analogy-test"><span class="gloss" data-term="Item">Test Item</span> — each task or question on the test</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─ Section break: Analogy → Test Theory ─ -->
+    <div class="sec-break">
+      <div class="sec-break-inner">
+        <div class="sec-break-rule"></div>
+        <div class="sec-break-lbl">From Analogy → Test Theory</div>
+        <div class="sec-break-rule"></div>
+      </div>
+    </div>
+
+    <div id="s1c" class="tx-sec" data-vp="diagram1">
+      <div class="tx-sec-inner">
+        <h3><span class="step-dot">3</span>From Domain to Test</h3>
+        <p>A <span class="gloss" data-term="Domain">domain</span> is the full body of what a student could possibly know about a subject. Because we can never test all of it, we <em>sample</em> — drawing a small, representative set of <span class="gloss" data-term="Item">items</span> meant to stand in for the whole domain.</p>
+        <p>Step through the animation to see the full process →</p>
+        <div style="margin:.85rem 0;display:flex;flex-direction:column;gap:.35rem">
+          <div class="anim-step-row" id="astep-1"><span class="anim-dot">1</span><span><strong>Domain</strong> — the full body of knowledge</span></div>
+          <div class="anim-step-row" id="astep-2"><span class="anim-dot">2</span><span><strong>Construct</strong> — the concept or characteristic a test is designed to measure</span></div>
+          <div class="anim-step-row" id="astep-3"><span class="anim-dot">3</span><span><strong>Test</strong> — a sample from a specific domain of interest</span></div>
+          <div class="anim-step-row" id="astep-4"><span class="anim-dot">4</span><span><strong>We Infer!</strong> — based on the Score, we reason about the domain</span></div>
+        </div>
+        <div class="callout" style="margin-top:.9rem">
+          <p style="margin-bottom:.55rem">🎯 <strong>We Infer!</strong> We make inference about the larger domain that is not tested. The test score becomes a <em>window</em> into unmeasured knowledge.</p>
+          <p style="margin-bottom:.55rem">Here is where <strong><span class="gloss" data-term="Validity">Validity</span></strong> matters:</p>
+          <p style="font-weight:700;font-size:1.05rem;color:#1d4ed8;line-height:1.65">"Validity refers to the degree to which evidence and theory support the interpretation of test scores for proposed uses of the test."</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="s1d" class="tx-sec tx-sec-last" data-vp="diagram2">
+      <div class="tx-sec-inner">
+        <h3><span class="step-dot">4</span>Threats to the Interpretability of Obtained Scores</h3>
+        <p>Every test score is built from several pieces — some that reflect the <span class="gloss" data-term="Construct">construct</span> we care about, and some that don't. Let's take it apart, piece by piece.</p>
+        <p><strong class="d2-text-trigger" id="d2-text-construct" style="color:#15803d" onclick="toggleD2GroupByName('construct')">1. Construct</strong></br>
+           <em>the concept or characteristic that a test is designed to measure</em>. It is made up of two parts:</p>
+        <p style="text-align:center;font-family:var(--mono);font-weight:700;font-size:.92rem;margin:.5rem 0">
+          <span style="color:#15803d">Construct</span> = <span style="color:#16a34a">Valid Measurement</span> + <span style="color:#166534">Construct Under-representation</span>
+        </p>
+        <ul style="margin:.4rem 0 .4rem 1.2rem;display:flex;flex-direction:column;gap:.3rem;font-size:.85rem">
+          <li><strong style="color:#16a34a">Valid Measurement</strong> — the part of the construct the test successfully captures</li>
+          <li><strong style="color:#166534"><span class="gloss" data-term="CU">Construct Under-representation</span></strong> — the part the test fails to capture</li>
+        </ul> <br>
+        <p><strong class="d2-text-trigger" id="d2-text-truescore" style="color:#7c3aed" onclick="toggleD2GroupByName('truescore')">2. True Score</strong> </br>
+          <em> But a test can't measure the Construct directly, what it actually produces is a True Score</em>. It is made up of:</p>
+        <p style="text-align:center;font-family:var(--mono);font-weight:700;font-size:.92rem;margin:.5rem 0">
+          <span style="color:#7c3aed">True Score</span> = <span style="color:#16a34a">Valid Measurement</span> + <span style="color:#d97706">Construct-Irrelevant Variance</span>
+        </p>
+        <ul style="margin:.4rem 0 .4rem 1.2rem;display:flex;flex-direction:column;gap:.3rem;font-size:.85rem">
+          <li><strong style="color:#16a34a">Valid Measurement</strong> — the same "on-target" portion as before</li>
+          <li><strong style="color:#d97706"><span class="gloss" data-term="CIV">Construct-Irrelevant Variance</span></strong> — variance from factors that have nothing to do with the construct</li>
+        </ul>
+        <p><strong class="d2-text-trigger" id="d2-text-score" style="color:#2563eb" onclick="toggleD2GroupByName('score')">3. Observed Score</strong> </br>
+        <p> <em>Finally, the actual Score</strong> a student receives adds one more piece <strong>Error</strong> on top of the True Score:</p></em>
+        <p style="text-align:center;font-family:var(--mono);font-weight:700;font-size:.92rem;margin:.5rem 0">
+          <span style="color:#2563eb">Observed Score</span> = <span style="color:#dc2626">Error</span> + <span style="color:#7c3aed">True Score</span>
+        </p>
+        <p style="text-align:center;font-family:var(--mono);font-weight:700;font-size:.8rem;margin:.3rem 0;opacity:.75">
+          = <span style="color:#dc2626">Error</span> + <span style="color:#16a34a">Valid Measurement</span> + <span style="color:#d97706">Construct-Irrelevant Variance</span>
+        </p>
+        <ul style="margin:.4rem 0 .4rem 1.2rem;display:flex;flex-direction:column;gap:.3rem;font-size:.85rem">
+          <li><strong style="color:#dc2626">Error</strong> — random, unsystematic noise unrelated to the construct</li>
+        </ul>
+        <div class="callout" style="margin-top:.9rem;border-color:#93c5fd;background:#eff6ff">
+          <p style="font-weight:700;color:#1d4ed8;margin-bottom:.35rem">Takeaway</p>
+          <p style="margin:0">Threats to the interpretability of obtained scores are minimized by clearly defining how particular psychological tests are to be used — and by minimizing both <strong style="color:#166534">Construct Under-representation</strong> and <strong style="color:#d97706">Construct-Irrelevant Variance</strong>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-viz" id="viz-p1">
+
+    <!-- Learning Objective intro panel (ch-header) — intentionally blank -->
+    <div id="vp-lo1" class="vp active">
+      <div style="flex:1;display:flex;align-items:flex-end;justify-content:center;padding-bottom:2rem">
+        <div style="font-size:.6rem;font-weight:600;text-transform:uppercase;letter-spacing:.18em;color:var(--gray-300)">↓ Scroll to explore</div>
+      </div>
+    </div>
+
+    <!-- Ocean canvas (also used by s1b — mapping overlay revealed at s1b) -->
+    <div id="vp-river" class="vp">
+      <div class="viz-lbl">The Pacific Ocean — Cast the Net</div>
+      <canvas id="canvas-river"></canvas>
+      <div class="ocean-bar">
+        <button class="btn btn-primary btn-sm" id="btn-cast">Cast Net</button>
+        <button class="btn btn-ghost btn-sm" id="btn-reset-river">Reset</button>
+        <div class="ocean-info" id="river-info">Watch the ocean — then cast the net!</div>
+      </div>
+    </div>
+
+    <!-- Diagram 1: Animated Domain→Sample→Test→Infer -->
+    <div id="vp-diagram1" class="vp">
+      <div class="viz-lbl">Domain → Sample → Test → Infer</div>
+      <div style="flex:1;position:relative;display:flex;flex-direction:column;overflow:hidden">
+        <canvas id="canvas-anim"></canvas>
+        <div style="background:var(--white);border-top:1px solid var(--gray-200);padding:.7rem 1.1rem;display:flex;gap:.6rem;align-items:center;flex-shrink:0">
+          <button class="btn btn-primary btn-sm" id="btn-anim-next">Next Step →</button>
+          <button class="btn btn-ghost btn-sm" id="btn-anim-reset">↺ Replay</button>
+          <div id="anim-lbl" style="font-size:.62rem;color:var(--gray-400);flex:1;text-align:right">Click Next Step to begin</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Diagram 2: Score Composition — Threats to Interpretability -->
+    <div id="vp-diagram2" class="vp">
+      <div class="viz-lbl">Anatomy of an Observed Score</div>
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 580 660" xmlns="http://www.w3.org/2000/svg" style="font-family:-apple-system,sans-serif">
+          <!-- Construct Under-representation (dark green, clickable) -->
+          <g class="diag-zone" id="d2-cu" onclick="showD2('cu')">
+            <rect id="d2-cu-rect" x="170" y="15" width="220" height="125" rx="6" fill="#86efac" stroke="#166534" stroke-width="2" stroke-dasharray="5,3"/>
+            <text x="280" y="63" text-anchor="middle" font-size="14" font-weight="700" fill="#14532d">Construct</text>
+            <text x="280" y="88" text-anchor="middle" font-size="14" font-weight="700" fill="#14532d">Under-representation</text>
+            <text x="280" y="115" text-anchor="middle" font-size="10.5" font-style="italic" fill="#166534">(click to learn more)</text>
+          </g>
+
+          <!-- Valid Measurement (vivid green, largest box) -->
+          <g id="d2-vm-group">
+            <rect id="d2-vm-rect" x="170" y="160" width="220" height="216" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+            <text x="280" y="278" text-anchor="middle" font-size="22" font-weight="700" fill="#15803d">Valid Measurement</text>
+          </g>
+
+          <!-- Construct-Irrelevant Variance (amber, clickable) -->
+          <g class="diag-zone" id="d2-civ" onclick="showD2('civ')">
+            <rect id="d2-civ-rect" x="170" y="396" width="220" height="125" rx="6" fill="#fef3c7" stroke="#d97706" stroke-width="2" stroke-dasharray="5,3"/>
+            <text x="280" y="444" text-anchor="middle" font-size="14" font-weight="700" fill="#92400e">Construct-Irrelevant</text>
+            <text x="280" y="469" text-anchor="middle" font-size="14" font-weight="700" fill="#92400e">Variance</text>
+            <text x="280" y="496" text-anchor="middle" font-size="10.5" font-style="italic" fill="#b45309">(click to learn more)</text>
+          </g>
+
+          <!-- Error (red) -->
+          <g id="d2-error-group">
+            <rect id="d2-error-rect" x="170" y="541" width="220" height="104" rx="6" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/>
+            <text x="280" y="598" text-anchor="middle" font-size="18" font-weight="700" fill="#991b1b">Error</text>
+          </g>
+
+          <!-- Brace: Construct = Valid Measurement + Construct Under-representation (click to highlight + dim the rest) -->
+          <g id="d2-construct-group" class="d2-bracket d2-clickable">
+            <path d="M168,15 C153,15 153,196 138,196 C153,196 153,376 168,376" fill="none" stroke="#15803d" stroke-width="2"/>
+            <text x="106" y="196" text-anchor="middle" font-size="15" font-weight="700" fill="#15803d" transform="rotate(-90 106 196)">Construct</text>
+          </g>
+
+          <!-- Brace: True Score = Valid Measurement + Construct-Irrelevant Variance (hover/click to highlight + dim the rest) -->
+          <g id="d2-truescore-group" class="d2-bracket d2-clickable">
+            <path d="M392,160 C407,160 407,341 422,341 C407,341 407,521 392,521" fill="none" stroke="#7c3aed" stroke-width="2"/>
+            <text x="452" y="341" text-anchor="middle" font-size="15" font-weight="700" fill="#7c3aed" transform="rotate(-90 452 341)">True Score</text>
+          </g>
+
+          <!-- Brace: Observed Score = Error + True Score = Error + Valid Measurement + Construct-Irrelevant Variance (click to highlight) -->
+          <g id="d2-score-group" class="d2-bracket d2-clickable">
+            <path d="M478,160 C493,160 493,403 508,403 C493,403 493,645 478,645" fill="none" stroke="#2563eb" stroke-width="2"/>
+            <text x="545" y="403" text-anchor="middle" font-size="15" font-weight="700" fill="#2563eb" transform="rotate(-90 545 403)">Observed Score</text>
+          </g>
+        </svg>
+
+        <div class="diag-info-box" id="d2-info">
+          <span class="diag-placeholder">👆 Click "Construct Under-representation" or "Construct-Irrelevant Variance" to see how each is defined — or click "Construct" / "True Score" / "Observed Score" to see the components.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ PART 2 TITLE SLIDE ═════════════════════════ -->
+<div class="part-title pt-p2">
+  <div class="pt-inner">
+    <div class="pt-eyebrow">Chapter 2 of 3 · Part 2</div>
+    <h2 class="pt-title-main">Interface Design in Test</h2>
+    <p class="pt-lead">Okay — now we understand what a test is, what validity means, and the threats to interpreting test scores: construct underrepresentation and construct-irrelevant variance. <br> Now let's dive into how these ideas connect to the testing interface itself!</p>
+    <span class="lo-tag">Learning Objective · Apply · Demonstrate</span>
+    <div class="lo-box">
+      <div class="lo-box-title">Learning Objective</div>
+      <div class="lo-box-lead">After this section, you will be able to:</div>
+      <p style="font-size:.85rem;color:var(--black);line-height:1.65;margin:0 0 .7rem">Understand the <strong> impact of interface complexity on score validity</strong> with understanding the cognitive load theory.</p>
+      <div class="lo-chips">
+        <span class="lo-chip">#Cognitive Load Theory</span>
+        <span class="lo-chip">#Intrinsic Cognitive load </span>
+        <span class="lo-chip">#Extraneous Cognitive load </span>     
+        <span class="lo-chip">#Germane Cognitive load </span>   
+        <span class="lo-chip">#Interface Complexity </span>
+      </div>
+    </div>
+    <div class="pt-scroll">↓ Scroll to begin</div>
+  </div>
+</div>
+
+<!-- ═══ PART 2 ═══════════════════════════════════ -->
+<section id="p2" class="chapter p2-accent">
+  <div class="col-text">
+
+    <div id="s2intro" class="tx-sec" data-vp="brain">
+      <div class="tx-sec-inner">
+        <h3><span class="step-dot">1</span>Meet Your Working Memory</h3>
+        <p><strong>Cognitive Load Theory</strong> is "an instructional theory based on our knowledge of human cognitive architecture which specifically addresses the limitations of working memory."</p>
+        <p>In plain terms: your brain has a limited amount of mental "workspace" available at any moment. When a student takes a computer-based test, every part of the interface pushes on that <em>same</em> limited workspace — not just the question itself, but every button, icon, scrollbar, and instruction around it.</p>
+        <p>Cognitive Load Theory splits that workspace into three types of load. <strong>Hover or click each one</strong> in the diagram to see what it means for test design.</p>
+        <div class="callout"><strong>Working memory is like a cup with a fixed size.</strong> Intrinsic, extraneous, and germane load are all being poured into that same cup. If the extraneous portion grows, there's less room left for everything else — including the load you actually <em>want</em> students spending on the construct.</div>
+      </div>
+    </div>
+
+    <div id="s2a" class="tx-sec" data-vp="complex">
+      <div class="tx-sec-inner">
+        <h3><span class="step-dot">2</span>UI Complexity and Cognitive Load</h3>
+        <p>Drag the <strong>UI Complexity slider</strong> from Level 1 (Simple) to Level 3 (Chaotic). <br>
+          A simple user interface has an <strong>optimal amount of icons, buttons, and interactions</strong> needed to solve a given item on the test, and these interactions are <strong>consistent</strong> across items. <br> While a chaotic user interface has <strong>too many icons, buttons, and interactions</strong> that may distract students from solving the item, with interactions that are <strong>inconsistent</strong> across items.</p>
+        <p>Watch the <strong>Working Memory bar</strong> re-partition as you drag.</p>
+        <div class="callout"><strong>Extraneous Cognitive Load:</strong> "cognitive load imposed by nonessential, interating elements. Distracts working memory from processing new information." Poor interface design is a primary source of extraneous load in testing environments.</div>
+        <p>Notice that <strong style="color:#b45309">Extraneous Load</strong> grows the most as complexity increases, while <strong style="color:#6d28d9">Germane Load</strong> and <strong style="color:#1d4ed8">Intrinsic Load</strong> shrink as we have limited working memory available to spend on the question itself.</p>
+      </div>
+    </div>
+
+    <div id="s2c" class="tx-sec tx-sec-last" data-vp="results">
+      <div class="tx-sec-inner">
+        <h3><span class="step-dot">3</span>Why This Is a Problem in Tests</h3>
+        <p>When the testing interface is unfamiliar, it adds <strong style="color:#b45309">extraneous cognitive load</strong> on top of the demands of the construct itself. If students differ in how familiar they are with that interface, their scores no longer reflect the construct alone — part of each score now reflects how comfortable that student is with the technology.</p>
+        <p><strong>Messick (1989)</strong> describes this kind of systematic, non-construct influence on scores — regardless of its source — as <strong style="color:#d97706"><span class="gloss" data-term="CIV">construct-irrelevant variance</span></strong>. As the donut on the right shows, the busier the interface gets, the larger that slice grows, and the smaller the slice reflecting valid measurement becomes.</p>
+        <div class="callout" style="border-color:#93c5fd;background:#eff6ff">
+          <p style="font-weight:700;color:#1d4ed8;margin-bottom:.35rem">Takeaway</p>
+          <p style="margin:0">The more complex an interface, the more <strong style="color:#b45309">extraneous cognitive load</strong> it imposes on students. That extra load shows up as <strong style="color:#d97706">construct-irrelevant variance</strong> in their scores, which lowers the test's <strong style="color:#1d4ed8">validity</strong>. When the interface becomes too busy, we start measuring how well students can operate the interface — not how well they know the construct.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-viz" id="viz-p2">
+    <!-- Brain diagram: three types of cognitive load sharing one working memory -->
+    <div id="vp-brain" class="vp active">
+      <div class="viz-lbl">Cognitive Load Theory — Working Memory</div>
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 580 340" xmlns="http://www.w3.org/2000/svg" style="font-family:-apple-system,sans-serif">
+          <defs>
+            <clipPath id="cl-brain-clip"><path d="M 398.6 145.0 C 399.5 156.2 392.1 169.5 385.2 179.6 C 378.4 189.7 367.9 197.6 357.4 205.6 C 346.9 213.6 335.2 225.8 322.4 227.7 C 309.6 229.6 294.9 219.5 280.5 217.0 C 266.1 214.5 246.2 219.1 236.1 212.5 C 226.0 205.9 225.8 188.7 220.0 177.5 C 214.2 166.2 202.2 156.2 201.4 145.0 C 200.5 133.8 207.9 120.5 214.8 110.4 C 221.6 100.3 232.1 92.4 242.6 84.4 C 253.1 76.4 264.8 64.2 277.6 62.3 C 290.4 60.4 305.1 70.5 319.5 73.0 C 333.9 75.5 353.8 70.9 363.9 77.5 C 374.0 84.1 374.2 101.3 380.0 112.5 C 385.8 123.8 397.8 133.8 398.6 145.0 Z"/></clipPath>
+          </defs>
+          <text x="300" y="20" text-anchor="middle" font-size="12" font-weight="700" fill="#9ca3af" letter-spacing="2">WORKING MEMORY (FIXED CAPACITY)</text>
+          <!-- Ear -->
+          <path d="M 417.3 215.0 C 417.6 220.5 416.4 228.1 413.7 232.3 C 411.1 236.6 405.7 239.0 401.5 240.5 C 397.3 241.9 392.6 242.3 388.4 241.0 C 384.1 239.6 378.7 236.8 376.1 232.4 C 373.6 228.1 372.9 220.5 373.3 215.0 C 373.6 209.5 375.7 204.0 378.1 199.4 C 380.6 194.8 383.9 189.1 387.9 187.2 C 391.9 185.2 398.0 185.7 402.0 187.7 C 405.9 189.8 409.2 195.0 411.7 199.5 C 414.3 204.1 416.9 209.5 417.3 215.0 Z" fill="#f1f5f9" stroke="#9ca3af" stroke-width="2.5"/>
+          <!-- Head silhouette (side profile, facing left) -->
+          <path d="M 290.0 35.0 C 321.7 32.5 341.7 35.8 360.0 45.0 C 378.3 54.2 392.0 72.5 400.0 90.0 C 408.0 107.5 408.3 130.8 408.0 150.0 C 407.7 169.2 403.5 189.2 398.0 205.0 C 392.5 220.8 383.0 234.2 375.0 245.0 C 367.0 255.8 356.7 261.7 350.0 270.0 C 343.3 278.3 353.3 290.8 335.0 295.0 C 316.7 299.2 258.3 299.2 240.0 295.0 C 221.7 290.8 230.0 277.8 225.0 270.0 C 220.0 262.2 216.7 253.0 210.0 248.0 C 203.3 243.0 192.5 244.3 185.0 240.0 C 177.5 235.7 167.2 227.0 165.0 222.0 C 162.8 217.0 173.7 214.0 172.0 210.0 C 170.3 206.0 162.8 202.7 155.0 198.0 C 147.2 193.3 126.2 188.7 125.0 182.0 C 123.8 175.3 145.8 166.7 148.0 158.0 C 150.2 149.3 138.0 140.5 138.0 130.0 C 138.0 119.5 142.7 106.7 148.0 95.0 C 153.3 83.3 146.3 70.0 170.0 60.0 C 193.7 50.0 258.3 37.5 290.0 35.0 Z" fill="#f1f5f9" stroke="#9ca3af" stroke-width="2.5"/>
+          <!-- Brain regions (clipped to brain shape) -->
+          <g clip-path="url(#cl-brain-clip)">
+            <rect class="cl-zone" id="cl-zone-germane" data-load="germane" x="300" y="55" width="115" height="180" fill="#8b5cf6" opacity=".75"/>
+            <rect class="cl-zone" id="cl-zone-intrinsic" data-load="intrinsic" x="195" y="55" width="105" height="90" fill="#3b82f6" opacity=".75"/>
+            <rect class="cl-zone" id="cl-zone-extraneous" data-load="extraneous" x="195" y="145" width="105" height="90" fill="#f59e0b" opacity=".75"/>
+            <g fill="none" stroke="rgba(0,0,0,.18)" stroke-width="2.5" stroke-linecap="round">
+              <path d="M 225 80 C 245 100 235 120 255 138"/>
+              <path d="M 275 65 C 298 88 288 112 312 132"/>
+              <path d="M 335 75 C 362 95 348 122 375 145"/>
+              <path d="M 235 165 C 262 182 290 178 318 195"/>
+              <path d="M 215 150 C 235 170 232 195 258 212"/>
+              <path d="M 290 195 C 315 205 345 198 370 210"/>
+            </g>
+          </g>
+          <!-- Brain outline -->
+          <path d="M 398.6 145.0 C 399.5 156.2 392.1 169.5 385.2 179.6 C 378.4 189.7 367.9 197.6 357.4 205.6 C 346.9 213.6 335.2 225.8 322.4 227.7 C 309.6 229.6 294.9 219.5 280.5 217.0 C 266.1 214.5 246.2 219.1 236.1 212.5 C 226.0 205.9 225.8 188.7 220.0 177.5 C 214.2 166.2 202.2 156.2 201.4 145.0 C 200.5 133.8 207.9 120.5 214.8 110.4 C 221.6 100.3 232.1 92.4 242.6 84.4 C 253.1 76.4 264.8 64.2 277.6 62.3 C 290.4 60.4 305.1 70.5 319.5 73.0 C 333.9 75.5 353.8 70.9 363.9 77.5 C 374.0 84.1 374.2 101.3 380.0 112.5 C 385.8 123.8 397.8 133.8 398.6 145.0 Z" fill="none" stroke="#1f2937" stroke-width="2.5"/>
+          <!-- Leader lines + clickable labels -->
+          <g class="cl-zone-label" data-load="intrinsic">
+            <line x1="95" y1="50" x2="245" y2="100" stroke="#1d4ed8" stroke-width="1.5" stroke-dasharray="3,4"/>
+            <circle cx="245" cy="100" r="4" fill="#3b82f6"/>
+            <text x="8" y="35" font-size="15" font-weight="700" fill="#1d4ed8">Intrinsic Load</text>
+            <text x="8" y="55" font-size="11.5" fill="#374151">(complexity of new</text>
+            <text x="8" y="71" font-size="11.5" fill="#374151">information)</text>
+          </g>
+          <g class="cl-zone-label" data-load="extraneous">
+            <line x1="95" y1="288" x2="248" y2="195" stroke="#b45309" stroke-width="1.5" stroke-dasharray="3,4"/>
+            <circle cx="248" cy="195" r="4" fill="#f59e0b"/>
+            <text x="8" y="273" font-size="15" font-weight="700" fill="#b45309">Extraneous Load</text>
+            <text x="8" y="293" font-size="11.5" fill="#374151">(unnecessary and</text>
+            <text x="8" y="309" font-size="11.5" fill="#374151">distracting info)</text>
+          </g>
+          <g class="cl-zone-label" data-load="germane">
+            <line x1="425" y1="288" x2="350" y2="200" stroke="#6d28d9" stroke-width="1.5" stroke-dasharray="3,4"/>
+            <circle cx="350" cy="200" r="4" fill="#8b5cf6"/>
+            <text x="425" y="273" font-size="15" font-weight="700" fill="#6d28d9">Germane Load</text>
+            <text x="425" y="293" font-size="11.5" fill="#374151">(linking new info with</text>
+            <text x="425" y="309" font-size="11.5" fill="#374151">current info)</text>
+          </g>
+        </svg>
+        <div class="diag-info-box" id="cl-info">
+          <span class="diag-placeholder">👆 Hover or click a load type above to see its definition, a test-taking example, and what it means for interface design.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Complexity panel: UI complexity slider + working memory bar -->
+    <div id="vp-complex" class="vp">
+      <div class="viz-lbl">UI Complexity → Cognitive Load</div>
+      <div style="flex:1;display:flex;flex-direction:column;padding:1rem 1.3rem;gap:1.6rem;justify-content:center">
+
+        <!-- Slider control -->
+        <div class="civ-slider-wrap">
+          <div class="civ-slider-row">
+            <span>UI Complexity</span>
+            <span id="civ-lvl-lbl" class="civ-lvl-lbl">Level 1 — Simple</span>
+          </div>
+          <input type="range" min="1" max="3" value="1" id="cplx-slider">
+          <div class="ctrl-levels"><span>Simple</span><span>Complex</span><span>Chaotic</span></div>
+        </div>
+
+        <!-- Working Memory bar (3 segments) -->
+        <div class="wm-wrap">
+          <div class="wm-title">Working Memory Allocation</div>
+          <div class="wm-bar">
+            <div class="wm-seg" id="wm-intrinsic" style="background:#3b82f6"></div>
+            <div class="wm-seg" id="wm-extraneous" style="background:#f59e0b"></div>
+            <div class="wm-seg" id="wm-germane" style="background:#8b5cf6"></div>
+          </div>
+          <div class="wm-legend">
+            <span><i style="background:#3b82f6"></i>Intrinsic — the construct itself</span>
+            <span><i style="background:#f59e0b"></i>Extraneous — the interface</span>
+            <span><i style="background:#8b5cf6"></i>Germane — making connections</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div id="vp-results" class="vp">
+      <div class="viz-lbl">Score Composition · What Is Being Measured?</div>
+      <div style="flex:1;overflow:auto;padding:1rem 1.3rem;display:flex;flex-direction:column;justify-content:center">
+       <div style="display:flex;flex-direction:column;gap:1.1rem;width:100%">
+        <!-- Slider control (mirrors Section 2, drives the same UI Complexity state) -->
+        <div class="civ-slider-wrap">
+          <div class="civ-slider-row">
+            <span>UI Complexity</span>
+            <span id="civ-lvl-lbl-r" class="civ-lvl-lbl">Level 1 — Simple</span>
+          </div>
+          <input type="range" min="1" max="3" value="1" id="cplx-slider-r">
+          <div class="ctrl-levels"><span>Simple</span><span>Complex</span><span>Chaotic</span></div>
+        </div>
+
+        <!-- Working Memory bar (mirrors Section 2, driven by the same UI Complexity slider) -->
+        <div class="wm-wrap">
+          <div class="wm-title">Working Memory Allocation</div>
+          <div class="wm-bar">
+            <div class="wm-seg" id="wm-intrinsic-r" style="background:#3b82f6"></div>
+            <div class="wm-seg" id="wm-extraneous-r" style="background:#f59e0b"></div>
+            <div class="wm-seg" id="wm-germane-r" style="background:#8b5cf6"></div>
+          </div>
+          <div class="wm-legend">
+            <span><i style="background:#3b82f6"></i>Intrinsic — the construct itself</span>
+            <span><i style="background:#f59e0b"></i>Extraneous — the interface</span>
+            <span><i style="background:#8b5cf6"></i>Germane — making connections</span>
+          </div>
+        </div>
+
+        <!-- Badge row -->
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem">
+          <div style="font-size:.76rem;font-weight:700;color:var(--black)">Observed score · current level</div>
+          <div id="civ-badge" class="donut-badge" style="background:#d1fae5;color:#166534">GOOD VALIDITY</div>
+        </div>
+
+        <!-- Row: Donut + Score Legend (Score Validity pie chart) -->
+        <div class="donut-row" style="align-items:flex-start">
+          <canvas id="donut-civ" width="200" height="200" style="flex-shrink:0"></canvas>
+          <div class="donut-legend">
+            <div class="donut-legend-item">
+              <div class="donut-swatch" style="background:#16a34a"></div>
+              <div>
+                <div class="donut-legend-lbl">Valid measurement</div>
+                <div class="donut-legend-sub" id="civ-valid-pct">Reflects math ability</div>
+              </div>
+            </div>
+            <div class="donut-legend-item">
+              <div class="donut-swatch" style="background:#d97706"></div>
+              <div>
+                <div class="donut-legend-lbl">Construct-irrelevant variance</div>
+                <div class="donut-legend-sub" id="civ-civ-pct">UI noise</div>
+              </div>
+            </div>
+            <div class="donut-legend-item">
+              <div class="donut-swatch" style="background:#dc2626"></div>
+              <div>
+                <div class="donut-legend-lbl">Error</div>
+                <div class="donut-legend-sub" id="civ-err-pct">Random noise</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Context description -->
+        <div class="donut-desc" id="civ-desc">Minor interface elements add a small layer of noise to the score.</div>
+       </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ PART 3 TITLE SLIDE ═════════════════════════ -->
+<div class="part-title pt-p3">
+  <div class="pt-inner">
+    <div class="pt-eyebrow">Chapter 3 of 3 · Part 3</div>
+    <h2 class="pt-title-main">SBAC Case Study</h2>
+    <p class="pt-lead">Well done up to part 2! I am pretty sure that you now fully understand what a test is, why test interface design is especially important for a test. But also, you might be still a bit unsure what a "simple interface" and "chaotic interface" is. <br> I will now show you one example item that has the complex interface from the real testing program: Smarter Balanced Assessment Consortium (SBAC), and how it can be improved to reduce the extraneous load. Let's dive in!</p>
+    <span class="lo-tag">Learning Objective · Evaluate · Critique</span>
+    <div class="lo-box">
+      <div class="lo-box-title">Learning Objective</div>
+      <div class="lo-box-lead">Through this section, you can:</div>
+      <p style="font-size:.85rem;color:var(--black);line-height:1.65;margin:0 0 .7rem">Critique the design of the SBAC plotting item by identifying <strong>construct-irrelevant variance</strong> and understanding how to develop the interface design for this item.</p>
+      <div class="lo-chips">
+        <span class="lo-chip">#SBAC</span>
+      </div>
+    </div>
+    <div class="pt-scroll">↓ Scroll to begin</div>
+  </div>
+</div>
+
+<!-- ═══ PART 3 ═══════════════════════════════════ -->
+<section id="p3" class="chapter p3-accent">
+  <div class="col-text">
+
+    <div id="s3a" class="tx-sec" data-vp="sbac-orig">
+      <div class="tx-sec-inner">
+        <h3><span class="step-dot">1</span>Meet the SBAC Plotting Interface</h3>
+        <p>The <strong>Smarter Balanced Assessment Consortium (SBAC)</strong> administers year-end summative tests across the United States, serving millions of students annually.</p>
+        <p>The visualization shows a mockup of an SBAC item: students are given a table of distance (<em>d</em>) and time (<em>t</em>) values and asked to use the <strong>"Add Arrow" tool</strong> to plot two points and draw a line connecting them. To erase, students must switch to a separate <strong>"Delete" tool</strong> — clicking the line removes only the line (both points remain), while clicking a point removes that point and the line, leaving the other point behind. Fully clearing a drawing therefore takes three separate clicks.</p>
+        <p>This is the actual sample item from the Grade 8 Math Practice Test.</p>
+        <div class="callout" style="font-size:.96rem"><strong>Question:</strong> What kinds of interaction are required to answer this item? Is there any redundancy or complication in how the tools work?</div>
+      </div>
+    </div>
+
+    <div id="s3b" class="tx-sec" data-vp="sbac-ann">
+      <div class="tx-sec-inner">
+        <h3><span class="step-dot">2</span>Identify the Problems</h3>
+        <p>The flowchart on the right maps out exactly what a student must click, drag, and release to <strong>answer</strong> — and to <strong>erase</strong> — this item.</p>
+
+        <p style="font-weight:700;margin-bottom:.3rem">1). To answer this...</p>
+        <ul>
+          <li id="txt-orig-1">Click the button: <strong>Add Arrow</strong></li>
+          <li id="txt-orig-2">Click a point in the grid → drag → release the mouse</li>
+        </ul>
+
+        <p style="font-weight:700;margin:1rem 0 .3rem">2). To draw this... <span style="font-weight:400;color:var(--gray-500)">(erasing)</span></p>
+        <ul>
+          <li id="txt-orig-3">Click the button: <strong>Delete</strong></li>
+          <li id="txt-orig-4">Click the line</li>
+          <li id="txt-orig-5">Click the dot(s)</li>
+        </ul>
+
+        <div class="callout" id="txt-orig-problem"><strong>Problem:</strong> To delete the drawn line, clicking the line removes only the line (both points remain), while clicking a point removes that point and the line, leaving the other point behind. Fully clearing a drawing therefore takes three separate clicks. It is redundant and time-consuming!</div>
+
+        <p style="font-weight:700;margin:1.1rem 0 .3rem">3). How can we redesign this?</p>
+        <ul>
+          <li id="txt-redesign-1">To answer: <s style="color:var(--gray-400)">click "Add Arrow"</s> — skip it. <br> <strong>Click the grid directly → drag → release </strong> .</li>
+          <li id="txt-redesign-2">To erase: click <strong>Delete</strong> once — the drawn line disappears entirely, ready to redraw. <s style="color:var(--gray-400)">No separate line/dot clicks.</s></li>
+        </ul>
+        <div class="callout" id="txt-redesign-final"><strong>Only two interactions are required:</strong> ① click the grid, drag, and release to draw the line; ② click "Delete" to clear it and start over.</div>
+
+        <p>Use the toggle and "Next Step" button in the visualization to step through both versions →</p>
+      </div>
+    </div>
+
+    <div id="s3c" class="tx-sec tx-sec-last" data-vp="sbac-cmp">
+      <div class="tx-sec-inner">
+        <h3><span class="step-dot">3</span>Compare: Original vs. Redesigned</h3>
+        <p>Toggle between the <strong>original</strong> and the <strong>redesigned</strong> interaction. The interface looks identical — try drawing and erasing a line in each.</p>
+        <ul>
+          <li>Original: select "Add Arrow," click two points, then switch to "Delete" and click the line and dot(s) separately — three clicks to fully clear</li>
+          <li>Redesigned: click, drag, and release anywhere on the grid to draw the line directly — no "Add Arrow" step needed</li>
+          <li>Redesigned: click "Delete" once and the entire line disappears, ready to redraw</li>
+        </ul>
+        <div class="callout" style="font-size:1.05rem">Same interface, same question — but removing the redundant tool-switching steps removes construct-irrelevant friction from the task.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-viz" id="viz-p3">
+    <!-- Original -->
+    <div id="vp-sbac-orig" class="vp active">
+      <div class="viz-lbl">SBAC Interface Mockup</div>
+      <div class="sbac-wrap">
+        <div class="sbac-globalbar">
+          <div class="gtb-group">
+            <button class="gtb-btn gtb-green" title="Back"><span class="gtb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></span><span class="gtb-label">Back</span></button>
+            <button class="gtb-btn gtb-green" title="Next"><span class="gtb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span><span class="gtb-label">Next</span></button>
+            <button class="gtb-btn gtb-green" title="Save"><span class="gtb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 4h12l4 4v12H4z"/><path d="M7 4v5h8V4"/><rect x="7" y="13" width="10" height="7"/></svg></span><span class="gtb-label">Save</span></button>
+            <button class="gtb-btn gtb-amber" title="Pause"><span class="gtb-icon"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg></span><span class="gtb-label">Pause</span></button>
+          </div>
+          <div class="gtb-progress"><span class="gtb-track"><span class="gtb-fill"></span></span></div>
+          <div class="gtb-group">
+            <button class="gtb-btn gtb-gray" title="Line Reader"><span class="gtb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="8" width="20" height="8" rx="4"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span><span class="gtb-label">Line Reader</span></button>
+            <button class="gtb-btn gtb-gray" title="Zoom Out"><span class="gtb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6"/><line x1="15.5" y1="15.5" x2="20" y2="20"/><line x1="8" y1="11" x2="14" y2="11"/></svg></span><span class="gtb-label">Zoom Out</span></button>
+            <button class="gtb-btn gtb-gray" title="Zoom In"><span class="gtb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6"/><line x1="15.5" y1="15.5" x2="20" y2="20"/><line x1="8" y1="11" x2="14" y2="11"/><line x1="11" y1="8" x2="11" y2="14"/></svg></span><span class="gtb-label">Zoom In</span></button>
+          </div>
+        </div>
+        <div class="sbac-itemhdr">
+          <div class="item-num">2</div>
+          <div class="item-progress"><span class="item-progress-fill"></span><span class="item-progress-icon">☰</span></div>
+        </div>
+        <div class="guest-tab">GUEST</div>
+        <div class="sbac-body2">
+          <div class="sbac-q2">
+            <p>The distance (<i>d</i>) in meters a car travels in <i>t</i> seconds is shown in the table.</p>
+            <table class="sbac-table">
+              <tr><th>d</th><th>t</th></tr>
+              <tr><td>10</td><td>1</td></tr>
+              <tr><td>20</td><td>2</td></tr>
+              <tr><td>30</td><td>3</td></tr>
+              <tr><td>40</td><td>4</td></tr>
+              <tr><td>50</td><td>5</td></tr>
+            </table>
+            <p>Use the <strong>Add Arrow</strong> tool to graph the proportional relationship between the distance (<i>d</i>) traveled by a car and the time (<i>t</i>).</p>
+          </div>
+          <div class="sbac-graph-col">
+            <div class="sbac-graph-toolbar">
+              <button class="sbac-xcircle" title="Close">✕</button>
+              <button class="sbac-pill" id="delBtn-orig"><span class="pill-x">✕</span>Delete</button>
+              <button class="sbac-pill" id="arrowBtn-orig"><span class="pill-arrow">→</span>Add Arrow</button>
+            </div>
+            <div class="sbac-graph-wrap">
+              <canvas id="dist-orig" width="230" height="210" style="cursor:crosshair"></canvas>
+              <div class="coord-hint" id="dist-hint-orig">Select "Add Arrow," then click the grid</div>
+            </div>
+            <div class="sbac-answer-box"></div>
+          </div>
+        </div>
+      </div>
+      <div style="padding:.38rem .72rem;font-size:.62rem;color:var(--gray-400);font-style:italic">Scroll to identify design problems →</div>
+    </div>
+
+    <!-- Annotated: now an interaction-flow diagram (Original vs. Redesigned) -->
+    <div id="vp-sbac-ann" class="vp">
+      <div class="viz-lbl">Interaction Flow: Original vs. Redesigned</div>
+      <div class="sbac-toggle">
+        <button class="stgl-btn active" id="flow-tab-orig">Original</button>
+        <button class="stgl-btn" id="flow-tab-redesign">Redesigned</button>
+      </div>
+      <div class="flow-wrap">
+        <svg viewBox="0 0 600 500" xmlns="http://www.w3.org/2000/svg" style="font-family:-apple-system,sans-serif;width:100%;height:auto">
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9ca3af"/></marker>
+            <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2563eb"/></marker>
+            <marker id="arrow-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d1d5db"/></marker>
+          </defs>
+
+          <!-- ============ ORIGINAL FLOW ============ -->
+          <g id="flow-group-orig">
+            <g class="fnode" data-step="0">
+              <rect x="130" y="8" width="340" height="52" rx="6" fill="#fbcfe8" stroke="#be185d" stroke-width="1.3"/>
+              <text x="300" y="23" text-anchor="middle" font-size="7.5" font-weight="700" letter-spacing=".08em" fill="#9d174d">FUNCTION</text>
+              <text x="300" y="39" text-anchor="middle" font-size="10.5" font-weight="600" fill="#831843">Plot the proportional relationship</text>
+              <text x="300" y="53" text-anchor="middle" font-size="10.5" font-weight="600" fill="#831843">between distance (d) and time (t)</text>
+            </g>
+
+            <g class="fnode" data-step="1">
+              <text x="150" y="78" text-anchor="middle" font-size="11" font-weight="700" fill="#1a1a1a">① To answer this</text>
+              <line x1="220" y1="60" x2="160" y2="86" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arrow)"/>
+              <rect x="20" y="86" width="260" height="42" rx="5" fill="#fed7aa" stroke="#c2410c" stroke-width="1.3"/>
+              <text x="32" y="99" font-size="7" font-weight="700" letter-spacing=".08em" fill="#9a3412">SIGNIFIER</text>
+              <text x="150" y="113" text-anchor="middle" font-size="10.3" font-weight="600" fill="#7c2d12">the "Add Arrow" button</text>
+              <line x1="150" y1="128" x2="150" y2="140" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arrow)"/>
+              <rect x="20" y="140" width="260" height="42" rx="5" fill="#bbf7d0" stroke="#15803d" stroke-width="1.3"/>
+              <text x="32" y="153" font-size="7" font-weight="700" letter-spacing=".08em" fill="#166534">ACTION</text>
+              <text x="150" y="167" text-anchor="middle" font-size="10.3" font-weight="600" fill="#14532d">click "Add Arrow"</text>
+            </g>
+
+            <g class="fnode" data-step="2">
+              <line x1="150" y1="182" x2="150" y2="194" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arrow)"/>
+              <rect x="20" y="194" width="260" height="42" rx="5" fill="#fed7aa" stroke="#c2410c" stroke-width="1.3"/>
+              <text x="32" y="207" font-size="7" font-weight="700" letter-spacing=".08em" fill="#9a3412">SIGNIFIER</text>
+              <text x="150" y="221" text-anchor="middle" font-size="10.3" font-weight="600" fill="#7c2d12">the empty grid</text>
+              <line x1="150" y1="236" x2="150" y2="248" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arrow)"/>
+              <rect x="20" y="248" width="260" height="58" rx="5" fill="#bbf7d0" stroke="#15803d" stroke-width="1.3"/>
+              <text x="32" y="261" font-size="7" font-weight="700" letter-spacing=".08em" fill="#166534">ACTION</text>
+              <text x="150" y="277" text-anchor="middle" font-size="10.3" font-weight="600" fill="#14532d">click a point on the grid →</text>
+              <text x="150" y="291" text-anchor="middle" font-size="10.3" font-weight="600" fill="#14532d">drag, then release the mouse</text>
+            </g>
+
+            <g class="fnode" data-step="3">
+              <text x="450" y="78" text-anchor="middle" font-size="11" font-weight="700" fill="#1a1a1a">② To draw / delete this</text>
+              <line x1="380" y1="60" x2="440" y2="86" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arrow)"/>
+              <rect x="320" y="86" width="260" height="42" rx="5" fill="#fed7aa" stroke="#c2410c" stroke-width="1.3"/>
+              <text x="332" y="99" font-size="7" font-weight="700" letter-spacing=".08em" fill="#9a3412">SIGNIFIER</text>
+              <text x="450" y="113" text-anchor="middle" font-size="10.3" font-weight="600" fill="#7c2d12">the "Delete" button</text>
+              <line x1="450" y1="128" x2="450" y2="140" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arrow)"/>
+              <rect x="320" y="140" width="260" height="42" rx="5" fill="#bbf7d0" stroke="#15803d" stroke-width="1.3"/>
+              <text x="332" y="153" font-size="7" font-weight="700" letter-spacing=".08em" fill="#166534">ACTION</text>
+              <text x="450" y="167" text-anchor="middle" font-size="10.3" font-weight="600" fill="#14532d">click "Delete"</text>
+            </g>
+
+            <g class="fnode" data-step="4">
+              <line x1="450" y1="182" x2="450" y2="194" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arrow)"/>
+              <rect x="320" y="194" width="260" height="42" rx="5" fill="#fed7aa" stroke="#c2410c" stroke-width="1.3"/>
+              <text x="332" y="207" font-size="7" font-weight="700" letter-spacing=".08em" fill="#9a3412">SIGNIFIER</text>
+              <text x="450" y="221" text-anchor="middle" font-size="10.3" font-weight="600" fill="#7c2d12">the drawn line</text>
+              <line x1="450" y1="236" x2="450" y2="248" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arrow)"/>
+              <rect x="320" y="248" width="260" height="58" rx="5" fill="#bbf7d0" stroke="#15803d" stroke-width="1.3"/>
+              <text x="332" y="261" font-size="7" font-weight="700" letter-spacing=".08em" fill="#166534">ACTION</text>
+              <text x="450" y="277" text-anchor="middle" font-size="10.3" font-weight="600" fill="#14532d">click the line →</text>
+              <text x="450" y="291" text-anchor="middle" font-size="10.3" font-weight="600" fill="#14532d">only the line is removed</text>
+            </g>
+
+            <g class="fnode" data-step="5">
+              <line x1="450" y1="306" x2="450" y2="320" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arrow)"/>
+              <rect x="320" y="320" width="260" height="42" rx="5" fill="#fed7aa" stroke="#c2410c" stroke-width="1.3"/>
+              <text x="332" y="333" font-size="7" font-weight="700" letter-spacing=".08em" fill="#9a3412">SIGNIFIER</text>
+              <text x="450" y="347" text-anchor="middle" font-size="10.3" font-weight="600" fill="#7c2d12">a point (dot)</text>
+              <line x1="450" y1="362" x2="450" y2="374" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#arrow)"/>
+              <rect x="320" y="374" width="260" height="58" rx="5" fill="#bbf7d0" stroke="#15803d" stroke-width="1.3"/>
+              <text x="332" y="387" font-size="7" font-weight="700" letter-spacing=".08em" fill="#166534">ACTION</text>
+              <text x="450" y="403" text-anchor="middle" font-size="10.3" font-weight="600" fill="#14532d">click a point →</text>
+              <text x="450" y="417" text-anchor="middle" font-size="10.3" font-weight="600" fill="#14532d">point + line removed</text>
+
+              <rect x="320" y="444" width="260" height="46" rx="5" fill="#fee2e2" stroke="#dc2626" stroke-width="1.3"/>
+              <text x="450" y="463" text-anchor="middle" font-size="12.5" font-weight="700" fill="#991b1b">⚠ 3 separate clicks needed</text>
+              <text x="450" y="479" text-anchor="middle" font-size="12.5" font-weight="700" fill="#991b1b">to fully clear the drawing</text>
+            </g>
+          </g>
+
+          <!-- ============ REDESIGNED FLOW ============ -->
+          <g id="flow-group-redesign" style="display:none">
+            <g class="fnode" data-step="0">
+              <rect x="130" y="8" width="340" height="52" rx="6" fill="#fbcfe8" stroke="#be185d" stroke-width="1.3"/>
+              <text x="300" y="23" text-anchor="middle" font-size="7.5" font-weight="700" letter-spacing=".08em" fill="#9d174d">FUNCTION</text>
+              <text x="300" y="39" text-anchor="middle" font-size="10.5" font-weight="600" fill="#831843">Plot the proportional relationship</text>
+              <text x="300" y="53" text-anchor="middle" font-size="10.5" font-weight="600" fill="#831843">between distance (d) and time (t)</text>
+            </g>
+
+            <g class="fnode" data-step="1">
+              <text x="150" y="78" text-anchor="middle" font-size="11" font-weight="700" fill="#1a1a1a">① To answer this</text>
+
+              <line x1="220" y1="60" x2="160" y2="86" stroke="#e5e7eb" stroke-width="1.5" marker-end="url(#arrow-gray)"/>
+              <rect x="20" y="86" width="260" height="42" rx="5" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1.3"/>
+              <text x="32" y="99" font-size="7" font-weight="700" letter-spacing=".08em" fill="#9ca3af">SIGNIFIER</text>
+              <text x="150" y="113" text-anchor="middle" font-size="10.3" font-weight="600" fill="#9ca3af" text-decoration="line-through">the "Add Arrow" button</text>
+              <line x1="30" y1="86" x2="280" y2="128" stroke="#dc2626" stroke-width="1.6" opacity=".5"/>
+              <line x1="280" y1="86" x2="30" y2="128" stroke="#dc2626" stroke-width="1.6" opacity=".5"/>
+
+              <line x1="150" y1="128" x2="150" y2="140" stroke="#e5e7eb" stroke-width="1.5" marker-end="url(#arrow-gray)"/>
+              <rect x="20" y="140" width="260" height="42" rx="5" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1.3"/>
+              <text x="32" y="153" font-size="7" font-weight="700" letter-spacing=".08em" fill="#9ca3af">ACTION</text>
+              <text x="150" y="167" text-anchor="middle" font-size="10.3" font-weight="600" fill="#9ca3af" text-decoration="line-through">click "Add Arrow"</text>
+              <line x1="30" y1="140" x2="280" y2="182" stroke="#dc2626" stroke-width="1.6" opacity=".5"/>
+              <line x1="280" y1="140" x2="30" y2="182" stroke="#dc2626" stroke-width="1.6" opacity=".5"/>
+
+              <path d="M210,60 Q-30,150 150,194" fill="none" stroke="#2563eb" stroke-width="1.8" stroke-dasharray="4,3" marker-end="url(#arrow-blue)"/>
+
+              <rect x="20" y="194" width="260" height="42" rx="5" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+              <text x="32" y="207" font-size="7" font-weight="700" letter-spacing=".08em" fill="#1e40af">SIGNIFIER</text>
+              <text x="150" y="221" text-anchor="middle" font-size="10.3" font-weight="600" fill="#1e3a8a">the empty grid</text>
+              <line x1="150" y1="236" x2="150" y2="248" stroke="#2563eb" stroke-width="1.8" marker-end="url(#arrow-blue)"/>
+              <rect x="20" y="248" width="260" height="58" rx="5" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+              <text x="32" y="261" font-size="7" font-weight="700" letter-spacing=".08em" fill="#1e40af">ACTION</text>
+              <text x="150" y="277" text-anchor="middle" font-size="10.3" font-weight="600" fill="#1e3a8a">click a point on the grid →</text>
+              <text x="150" y="291" text-anchor="middle" font-size="10.3" font-weight="600" fill="#1e3a8a">drag, then release to draw</text>
+            </g>
+
+            <g class="fnode" data-step="2">
+              <text x="450" y="78" text-anchor="middle" font-size="11" font-weight="700" fill="#1a1a1a">② To erase this</text>
+
+              <line x1="380" y1="60" x2="440" y2="86" stroke="#2563eb" stroke-width="1.8" marker-end="url(#arrow-blue)"/>
+              <rect x="320" y="86" width="260" height="42" rx="5" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+              <text x="332" y="99" font-size="7" font-weight="700" letter-spacing=".08em" fill="#1e40af">SIGNIFIER</text>
+              <text x="450" y="113" text-anchor="middle" font-size="10.3" font-weight="600" fill="#1e3a8a">the "Delete" button</text>
+              <line x1="450" y1="128" x2="450" y2="140" stroke="#2563eb" stroke-width="1.8" marker-end="url(#arrow-blue)"/>
+              <rect x="320" y="140" width="260" height="42" rx="5" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+              <text x="332" y="153" font-size="7" font-weight="700" letter-spacing=".08em" fill="#1e40af">ACTION</text>
+              <text x="450" y="167" text-anchor="middle" font-size="10.3" font-weight="600" fill="#1e3a8a">click "Delete" → line clears instantly</text>
+
+              <line x1="450" y1="182" x2="450" y2="194" stroke="#e5e7eb" stroke-width="1.5" marker-end="url(#arrow-gray)"/>
+              <rect x="320" y="194" width="260" height="42" rx="5" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1.3"/>
+              <text x="332" y="207" font-size="7" font-weight="700" letter-spacing=".08em" fill="#9ca3af">SIGNIFIER</text>
+              <text x="450" y="221" text-anchor="middle" font-size="10.3" font-weight="600" fill="#9ca3af" text-decoration="line-through">the drawn line</text>
+              <line x1="330" y1="194" x2="570" y2="236" stroke="#dc2626" stroke-width="1.6" opacity=".5"/>
+              <line x1="570" y1="194" x2="330" y2="236" stroke="#dc2626" stroke-width="1.6" opacity=".5"/>
+
+              <line x1="450" y1="236" x2="450" y2="248" stroke="#e5e7eb" stroke-width="1.5" marker-end="url(#arrow-gray)"/>
+              <rect x="320" y="248" width="260" height="58" rx="5" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1.3"/>
+              <text x="332" y="261" font-size="7" font-weight="700" letter-spacing=".08em" fill="#9ca3af">ACTION</text>
+              <text x="450" y="277" text-anchor="middle" font-size="10.3" font-weight="600" fill="#9ca3af" text-decoration="line-through">click the line →</text>
+              <text x="450" y="291" text-anchor="middle" font-size="10.3" font-weight="600" fill="#9ca3af" text-decoration="line-through">only the line is removed</text>
+              <line x1="330" y1="248" x2="570" y2="306" stroke="#dc2626" stroke-width="1.6" opacity=".5"/>
+              <line x1="570" y1="248" x2="330" y2="306" stroke="#dc2626" stroke-width="1.6" opacity=".5"/>
+
+              <line x1="450" y1="306" x2="450" y2="320" stroke="#e5e7eb" stroke-width="1.5" marker-end="url(#arrow-gray)"/>
+              <rect x="320" y="320" width="260" height="42" rx="5" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1.3"/>
+              <text x="332" y="333" font-size="7" font-weight="700" letter-spacing=".08em" fill="#9ca3af">SIGNIFIER</text>
+              <text x="450" y="347" text-anchor="middle" font-size="10.3" font-weight="600" fill="#9ca3af" text-decoration="line-through">a point (dot)</text>
+              <line x1="330" y1="320" x2="570" y2="362" stroke="#dc2626" stroke-width="1.6" opacity=".5"/>
+              <line x1="570" y1="320" x2="330" y2="362" stroke="#dc2626" stroke-width="1.6" opacity=".5"/>
+
+              <line x1="450" y1="362" x2="450" y2="374" stroke="#e5e7eb" stroke-width="1.5" marker-end="url(#arrow-gray)"/>
+              <rect x="320" y="374" width="260" height="58" rx="5" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1.3"/>
+              <text x="332" y="387" font-size="7" font-weight="700" letter-spacing=".08em" fill="#9ca3af">ACTION</text>
+              <text x="450" y="403" text-anchor="middle" font-size="10.3" font-weight="600" fill="#9ca3af" text-decoration="line-through">click a point →</text>
+              <text x="450" y="417" text-anchor="middle" font-size="10.3" font-weight="600" fill="#9ca3af" text-decoration="line-through">point + line removed</text>
+              <line x1="330" y1="374" x2="570" y2="432" stroke="#dc2626" stroke-width="1.6" opacity=".5"/>
+              <line x1="570" y1="374" x2="330" y2="432" stroke="#dc2626" stroke-width="1.6" opacity=".5"/>
+            </g>
+
+            <g class="fnode" data-step="3">
+              <rect x="20" y="444" width="560" height="46" rx="5" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+              <text x="300" y="464" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1e3a8a">✓ Only two interactions are needed:</text>
+              <text x="300" y="480" text-anchor="middle" font-size="12" font-weight="600" fill="#1e3a8a">① click, drag, release to draw   ② click "Delete" to clear and redraw</text>
+            </g>
+          </g>
+        </svg>
+      </div>
+      <div style="background:var(--white);border-top:1px solid var(--gray-200);padding:.7rem 1.1rem;display:flex;gap:.6rem;align-items:center;flex-shrink:0">
+        <button class="btn btn-primary btn-sm" id="flow-next">Next Step →</button>
+        <button class="btn btn-ghost btn-sm" id="flow-replay">↺ Replay</button>
+        <div id="flow-lbl" style="font-size:.62rem;color:var(--gray-400);flex:1;text-align:right">Click "Next Step" to begin</div>
+      </div>
+    </div>
+
+    <!-- Compare -->
+    <div id="vp-sbac-cmp" class="vp">
+      <div class="sbac-toggle">
+        <button class="stgl-btn active" id="btn-orig">Original</button>
+        <button class="stgl-btn" id="btn-impr">Redesigned ✦</button>
+      </div>
+      <div class="sbac-wrap" id="sbac-cmp-wrap">
+        <!-- original -->
+        <div id="cmp-orig">
+          <div class="sbac-globalbar compact">
+            <div class="gtb-group">
+              <button class="gtb-btn gtb-green" title="Back"><span class="gtb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></span></button>
+              <button class="gtb-btn gtb-green" title="Next"><span class="gtb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></button>
+              <button class="gtb-btn gtb-green" title="Save"><span class="gtb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 4h12l4 4v12H4z"/><path d="M7 4v5h8V4"/><rect x="7" y="13" width="10" height="7"/></svg></span></button>
+              <button class="gtb-btn gtb-amber" title="Pause"><span class="gtb-icon"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg></span></button>
+            </div>
+            <div class="gtb-progress"><span class="gtb-track"><span class="gtb-fill"></span></span></div>
+            <div class="gtb-group">
+              <button class="gtb-btn gtb-gray" title="Line Reader"><span class="gtb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="8" width="20" height="8" rx="4"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span></button>
+              <button class="gtb-btn gtb-gray" title="Zoom Out"><span class="gtb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6"/><line x1="15.5" y1="15.5" x2="20" y2="20"/><line x1="8" y1="11" x2="14" y2="11"/></svg></span></button>
+              <button class="gtb-btn gtb-gray" title="Zoom In"><span class="gtb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6"/><line x1="15.5" y1="15.5" x2="20" y2="20"/><line x1="8" y1="11" x2="14" y2="11"/><line x1="11" y1="8" x2="11" y2="14"/></svg></span></button>
+            </div>
+          </div>
+          <div class="sbac-itemhdr" style="padding:.32rem .6rem .15rem">
+            <div class="item-num">2</div>
+            <div class="item-progress"><span class="item-progress-fill"></span><span class="item-progress-icon">☰</span></div>
+          </div>
+          <div class="guest-tab" style="margin:.2rem .6rem 0">GUEST</div>
+          <div class="sbac-body2" style="padding:.5rem .65rem">
+            <div class="sbac-q2" style="font-size:.65rem">
+              <p>The distance (<i>d</i>) in meters a car travels in <i>t</i> seconds is shown in the table.</p>
+              <table class="sbac-table" style="font-size:.62rem">
+                <tr><th>d</th><th>t</th></tr>
+                <tr><td>10</td><td>1</td></tr>
+                <tr><td>20</td><td>2</td></tr>
+                <tr><td>30</td><td>3</td></tr>
+                <tr><td>40</td><td>4</td></tr>
+                <tr><td>50</td><td>5</td></tr>
+              </table>
+              <p>Use the <strong>Add Arrow</strong> tool to graph the proportional relationship between the distance (<i>d</i>) traveled by a car and the time (<i>t</i>).</p>
+            </div>
+            <div class="sbac-graph-col">
+              <div class="sbac-graph-toolbar">
+                <button class="sbac-xcircle" title="Close">✕</button>
+                <button class="sbac-pill" id="delBtn-cmp-o"><span class="pill-x">✕</span>Delete</button>
+                <button class="sbac-pill" id="arrowBtn-cmp-o"><span class="pill-arrow">→</span>Add Arrow</button>
+              </div>
+              <div class="sbac-graph-wrap">
+                <canvas id="dist-cmp-o" width="210" height="195" style="cursor:crosshair"></canvas>
+                <div class="coord-hint" id="dist-hint-cmp-o">Select "Add Arrow," then click the grid</div>
+              </div>
+              <div class="sbac-answer-box"></div>
+            </div>
+          </div>
+        </div>
+        <!-- redesigned: identical interface, simplified interaction -->
+        <div id="cmp-impr" style="display:none">
+          <div class="sbac-globalbar compact">
+            <div class="gtb-group">
+              <button class="gtb-btn gtb-green" title="Back"><span class="gtb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></span></button>
+              <button class="gtb-btn gtb-green" title="Next"><span class="gtb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></button>
+              <button class="gtb-btn gtb-green" title="Save"><span class="gtb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 4h12l4 4v12H4z"/><path d="M7 4v5h8V4"/><rect x="7" y="13" width="10" height="7"/></svg></span></button>
+              <button class="gtb-btn gtb-amber" title="Pause"><span class="gtb-icon"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg></span></button>
+            </div>
+            <div class="gtb-progress"><span class="gtb-track"><span class="gtb-fill"></span></span></div>
+            <div class="gtb-group">
+              <button class="gtb-btn gtb-gray" title="Line Reader"><span class="gtb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="8" width="20" height="8" rx="4"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span></button>
+              <button class="gtb-btn gtb-gray" title="Zoom Out"><span class="gtb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6"/><line x1="15.5" y1="15.5" x2="20" y2="20"/><line x1="8" y1="11" x2="14" y2="11"/></svg></span></button>
+              <button class="gtb-btn gtb-gray" title="Zoom In"><span class="gtb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6"/><line x1="15.5" y1="15.5" x2="20" y2="20"/><line x1="8" y1="11" x2="14" y2="11"/><line x1="11" y1="8" x2="11" y2="14"/></svg></span></button>
+            </div>
+          </div>
+          <div class="sbac-itemhdr" style="padding:.32rem .6rem .15rem">
+            <div class="item-num">2</div>
+            <div class="item-progress"><span class="item-progress-fill"></span><span class="item-progress-icon">☰</span></div>
+          </div>
+          <div class="guest-tab" style="margin:.2rem .6rem 0">GUEST</div>
+          <div class="sbac-body2" style="padding:.5rem .65rem">
+            <div class="sbac-q2" style="font-size:.65rem">
+              <p>The distance (<i>d</i>) in meters a car travels in <i>t</i> seconds is shown in the table.</p>
+              <table class="sbac-table" style="font-size:.62rem">
+                <tr><th>d</th><th>t</th></tr>
+                <tr><td>10</td><td>1</td></tr>
+                <tr><td>20</td><td>2</td></tr>
+                <tr><td>30</td><td>3</td></tr>
+                <tr><td>40</td><td>4</td></tr>
+                <tr><td>50</td><td>5</td></tr>
+              </table>
+              <p>Graph the proportional relationship between the distance (<i>d</i>) traveled by a car and the time (<i>t</i>).</p>
+            </div>
+            <div class="sbac-graph-col">
+              <div class="sbac-graph-toolbar">
+                <button class="sbac-xcircle" title="Close">✕</button>
+                <button class="sbac-pill" id="delBtn-cmp-i"><span class="pill-x">✕</span>Delete</button>
+              </div>
+              <div class="sbac-graph-wrap">
+                <canvas id="dist-cmp-i" width="210" height="195" style="cursor:crosshair"></canvas>
+                <div class="coord-hint" id="dist-hint-cmp-i">Click and drag on the grid to draw a line</div>
+              </div>
+              <div class="sbac-answer-box"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="cmp-note" style="padding:.45rem .7rem;background:var(--gray-50);border-top:1px solid var(--gray-200);font-size:.63rem;color:var(--gray-400)">Original: "Add Arrow" → click two points to draw · "Delete" → click line, then click each dot — 3 clicks to fully clear</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FINAL REMARKS ═══════════════════════════════ -->
+<div class="part-title pt-final">
+  <div class="pt-inner">
+    <div class="pt-eyebrow">Final Remarks</div>
+    <h2 class="pt-title-main">Every Click Is Part of the Score</h2>
+    <p class="pt-lead">A test score is only meaningful if it can be interpreted as evidence of the construct it claims to measure — not as evidence of how well a student navigated the interface. Throughout this explorable, we saw how interface friction — extraneous tools, ambiguous icons, redundant steps — consumes working memory that should be spent on the actual task, introducing construct-irrelevant variance into the score.</p>
+    <div class="lo-box">
+      <div class="lo-box-title">Key Takeaways</div>
+      <p style="font-size:.85rem;color:var(--black);line-height:1.65;margin:0 0 .6rem"><strong>1. Validity is the goal.</strong> A test is valid when its scores can be interpreted as evidence of the construct it's meant to measure — and nothing else.</p>
+      <p style="font-size:.85rem;color:var(--black);line-height:1.65;margin:0 0 .6rem"><strong>2. Cognitive load is finite.</strong> Every bit of working memory spent decoding the interface is memory not spent demonstrating knowledge.</p>
+      <p style="font-size:.85rem;color:var(--black);line-height:1.65;margin:0"><strong>3. Small redesigns matter.</strong> In the SBAC case study, removing one redundant tool-switching step measurably reduced the interaction burden — without changing the question at all.</p>
+    </div>
+  </div>
+</div>
+
+<footer id="footer">
+  <p>Eunjung Myoung · EDUC 432 · Stanford University · Spring 2026</p>
+  <p style="margin-top:.3rem;color:var(--gray-300)">This explorable explanation introduces UI/UX designers to test validity, construct-irrelevant variance, and cognitive load theory through interactive visualizations and a real-world SBAC case study.</p>
+</footer>
+
+</main>
+
+<div id="gloss-popup"></div>
+<script>
+'use strict';
+const $  = id => document.getElementById(id);
+const on = (el, ev, fn) => el && el.addEventListener(ev, fn);
+
+/* ── COLLAPSIBLE NAV (closed by default) ── */
+(function(){
+  var nav  = document.getElementById('nav');
+  var main = document.getElementById('main');
+  var btn  = document.createElement('button');
+  btn.className = 'nav-toggle';
+  btn.setAttribute('aria-label','Toggle navigation');
+  btn.innerHTML = '<span></span><span></span><span></span>';
+  document.body.appendChild(btn);
+  btn.addEventListener('click', function(){
+    var open = nav.classList.toggle('is-open');
+    main.classList.toggle('nav-open', open);
+    btn.classList.toggle('is-open', open);
+  });
+})();
+
+/* ── NAV ACTIVE ── */
+const navLinks = document.querySelectorAll('#nav .nav-link[data-sec]');
+function setActiveNav(id) {
+  navLinks.forEach(l => l.classList.remove('active'));
+  const m = document.querySelector('.nav-link[data-sec="'+id+'"]');
+  if (m) m.classList.add('active');
+}
+const sids = ['hero','p1','s1a','s1b','s1c','s1d','p2','s2intro','s2a','s2c','p3','s3a','s3b','s3c'];
+const ioNav = new IntersectionObserver(e => e.forEach(x => { if(x.isIntersecting) setActiveNav(x.target.id); }), {threshold:.4});
+sids.forEach(id => { const el=$(id); if(el) ioNav.observe(el); });
+
+/* ── VIZ SWITCHER ── */
+const ioViz = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if(!e.isIntersecting) return;
+    const vpId = 'vp-'+e.target.dataset.vp;
+    const ch = e.target.closest('.chapter');
+    if(!ch) return;
+    ch.querySelectorAll('.vp').forEach(p => p.classList.remove('active'));
+    const t = $(vpId);
+    if(t) t.classList.add('active');
+  });
+}, {threshold:.45});
+document.querySelectorAll('[data-vp]').forEach(s => ioViz.observe(s));
+
+/* River mapping overlay: separate observer with higher threshold so it only
+   appears when s1b is well into view (s1a fully scrolled past) */
+const ioRiverMap = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    const rm = document.getElementById('river-mapping');
+    if(rm) rm.style.display = e.isIntersecting ? 'flex' : 'none';
+  });
+}, {threshold: 0.7});
+const _s1b = document.getElementById('s1b');
+if(_s1b) ioRiverMap.observe(_s1b);
+
+/* ── OCEAN CANVAS (Pacific Ocean: edible fish + net animation) ── */
+const OCEAN_ITEMS = [
+  /* Edible fish — the "construct" (target species, highlighted with a glow) */
+  {shape:'fish1', x:.16, y:.20, vx: .14, vy: .09, isEdible:true},
+  {shape:'fish2', x:.66, y:.18, vx:-.16, vy: .12, isEdible:true},
+  {shape:'fish1', x:.40, y:.62, vx: .18, vy:-.10, isEdible:true},
+  {shape:'fish2', x:.78, y:.70, vx:-.13, vy: .08, isEdible:true},
+  /* Other sea life — not the construct, but part of the domain */
+  {shape:'fish3', x:.30, y:.40, vx: .11, vy: .07, isEdible:false},
+  {shape:'fish3', x:.58, y:.50, vx:-.10, vy: .09, isEdible:false},
+  {shape:'shark', x:.85, y:.30, vx:-.12, vy: .10, isEdible:false},
+  {shape:'star',  x:.22, y:.82, vx: .07, vy:-.06, isEdible:false},
+  {shape:'star',  x:.50, y:.88, vx:-.06, vy: .05, isEdible:false},
+  {shape:'squid', x:.12, y:.52, vx: .08, vy: .06, isEdible:false},
+  {shape:'squid', x:.70, y:.58, vx:-.09, vy: .07, isEdible:false},
+];
+let riverTime=0, riverCtx=null, netState=null, rivCaught=new Set();
+
+function initRiver(){
+  const c=$('canvas-river'); if(!c) return;
+  const resize=()=>{const r=c.parentElement.getBoundingClientRect();c.width=r.width;c.height=Math.max(r.height-58,150);};
+  resize(); new ResizeObserver(resize).observe(c.parentElement);
+  riverCtx=c.getContext('2d'); requestAnimationFrame(tickRiver);
+}
+
+function tickRiver(){
+  riverTime+=.005;
+  const c=$('canvas-river');
+  if(!c||!riverCtx){requestAnimationFrame(tickRiver);return;}
+  const W=c.width, H=c.height;
+  OCEAN_ITEMS.forEach(f=>{
+    f.x+=f.vx*.0009; f.y+=f.vy*.0009+Math.sin(riverTime+f.x*6)*.0004;
+    if(f.x<.05){f.x=.05;f.vx=Math.abs(f.vx);} if(f.x>.95){f.x=.95;f.vx=-Math.abs(f.vx);}
+    if(f.y<.07){f.y=.07;f.vy=Math.abs(f.vy);} if(f.y>.93){f.y=.93;f.vy=-Math.abs(f.vy);}
+  });
+  /* deep ocean gradient */
+  const grad=riverCtx.createLinearGradient(0,0,0,H);
+  grad.addColorStop(0,'#bae6fd'); grad.addColorStop(.35,'#7dd3fc');
+  grad.addColorStop(.7,'#38bdf8'); grad.addColorStop(1,'#0284c7');
+  riverCtx.fillStyle=grad; riverCtx.fillRect(0,0,W,H);
+  riverCtx.strokeStyle='rgba(255,255,255,.3)'; riverCtx.lineWidth=1.5;
+  for(let i=0;i<9;i++){
+    const wy=(H/9)*i+8+Math.sin(riverTime*1.4+i)*7;
+    riverCtx.beginPath(); riverCtx.moveTo(0,wy);
+    for(let x=0;x<=W;x+=32) riverCtx.quadraticCurveTo(x+16,wy-5+Math.sin(riverTime+x*.02)*5,x+32,wy);
+    riverCtx.stroke();
+  }
+  OCEAN_ITEMS.forEach((f,i)=>drawRiverItem(riverCtx,f,W,H,rivCaught.has(i)));
+  if(netState) drawNet(riverCtx,netState.cx,netState.cy,netState.r);
+  requestAnimationFrame(tickRiver);
+}
+
+function drawNet(ctx,nx,ny,nr){
+  ctx.save();
+  /* mesh lines clipped to circle */
+  ctx.beginPath(); ctx.arc(nx,ny,nr,0,Math.PI*2); ctx.save(); ctx.clip();
+  ctx.strokeStyle='rgba(20,20,20,.32)'; ctx.lineWidth=0.85;
+  const st=13;
+  for(let gx=nx-nr;gx<=nx+nr;gx+=st){ctx.beginPath();ctx.moveTo(gx,ny-nr);ctx.lineTo(gx+st*.2,ny+nr);ctx.stroke();}
+  for(let gy=ny-nr;gy<=ny+nr;gy+=st){ctx.beginPath();ctx.moveTo(nx-nr,gy);ctx.lineTo(nx+nr,gy+st*.12);ctx.stroke();}
+  ctx.restore();
+  /* fill */
+  ctx.beginPath(); ctx.arc(nx,ny,nr,0,Math.PI*2);
+  ctx.fillStyle='rgba(0,0,0,0.06)'; ctx.fill();
+  /* rim */
+  ctx.beginPath(); ctx.arc(nx,ny,nr,0,Math.PI*2);
+  ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=2.8; ctx.stroke();
+  /* handle */
+  const hx=nx+nr*.52, hy2=ny-nr*.58;
+  ctx.beginPath(); ctx.moveTo(hx,hy2); ctx.lineTo(hx+nr*.85,hy2-nr*.75);
+  ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=3.5; ctx.lineCap='round'; ctx.stroke(); ctx.lineCap='butt';
+  /* label */
+  ctx.fillStyle='#1a1a1a'; ctx.font='bold 10px -apple-system,sans-serif';
+  ctx.textAlign='center'; ctx.fillText('Test (Net)',nx,ny-nr-9);
+  ctx.restore();
+}
+
+function drawRiverItem(ctx,f,W,H,isCaught){
+  const px=f.x*W, py=f.y*H;
+  ctx.save(); ctx.translate(px,py);
+  drawFishShape(ctx,f.shape,f.vx>0?1:-1,isCaught,f.isEdible);
+  ctx.restore();
+}
+
+function drawFishShape(ctx,shape,dir,caught,isEdible){
+  if(shape==='star'){
+    const sc=caught?'#1d4ed8':'rgba(255,255,255,.9)';
+    ctx.strokeStyle=sc; ctx.fillStyle=caught?'rgba(253,186,116,.85)':'rgba(255,220,150,.72)'; ctx.lineWidth=1.6;
+    ctx.beginPath();
+    for(let i=0;i<5;i++){
+      const oa=(i*Math.PI*2/5)-Math.PI/2, ia=oa+Math.PI/5;
+      i===0?ctx.moveTo(Math.cos(oa)*16,Math.sin(oa)*16):ctx.lineTo(Math.cos(oa)*16,Math.sin(oa)*16);
+      ctx.lineTo(Math.cos(ia)*7,Math.sin(ia)*7);
+    }
+    ctx.closePath(); ctx.fill(); ctx.stroke(); return;
+  }
+  if(shape==='squid'){
+    const sc=caught?'#7c3aed':'rgba(255,255,255,.9)';
+    const fc=caught?'rgba(196,181,253,.85)':'rgba(255,255,255,.5)';
+    ctx.strokeStyle=sc; ctx.fillStyle=fc; ctx.lineWidth=1.6;
+    ctx.beginPath(); ctx.ellipse(0,-8,13,17,0,0,Math.PI*2); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.arc(-4,-12,1.6,0,Math.PI*2); ctx.arc(4,-12,1.6,0,Math.PI*2); ctx.fillStyle='#1a1a1a'; ctx.fill();
+    for(let i=-2;i<=2;i++){
+      ctx.beginPath();
+      ctx.moveTo(i*4.5,6);
+      ctx.quadraticCurveTo(i*4.5+(i%2===0?5:-5),16,i*3.5,26);
+      ctx.lineWidth=1.6; ctx.strokeStyle=sc; ctx.stroke();
+    }
+    return;
+  }
+  /* edible fish get a warm golden glow — these are the "construct" */
+  let sc, fc;
+  if(isEdible){ sc=caught?'#d97706':'#f59e0b'; fc=caught?'rgba(252,211,77,.95)':'rgba(253,230,138,.78)'; }
+  else { sc=caught?'#1d4ed8':'rgba(255,255,255,.9)'; fc=caught?'rgba(147,197,253,.8)':'rgba(255,255,255,.55)'; }
+  ctx.save();
+  if(isEdible){ ctx.shadowColor='rgba(245,158,11,.85)'; ctx.shadowBlur=14; }
+  ctx.scale(dir,1);
+  ctx.strokeStyle=sc; ctx.fillStyle=fc; ctx.lineWidth=1.6;
+  switch(shape){
+    case 'fish1':
+      ctx.beginPath(); ctx.ellipse(0,0,22,9,0,0,Math.PI*2); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-22,0); ctx.lineTo(-33,-9); ctx.lineTo(-33,9); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.arc(11,-2,2.5,0,Math.PI*2); ctx.fillStyle='#1a1a1a'; ctx.fill(); break;
+    case 'fish2':
+      ctx.beginPath(); ctx.ellipse(0,2,18,14,0,0,Math.PI*2); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-18,2); ctx.lineTo(-28,-7); ctx.lineTo(-28,11); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-2,-12); ctx.lineTo(5,-22); ctx.lineTo(11,-12); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.arc(9,0,2.5,0,Math.PI*2); ctx.fillStyle='#1a1a1a'; ctx.fill(); break;
+    case 'fish3':
+      ctx.beginPath(); ctx.ellipse(0,0,30,5,0,0,Math.PI*2); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-30,0); ctx.lineTo(-42,-7); ctx.moveTo(-30,0); ctx.lineTo(-42,7); ctx.stroke();
+      ctx.beginPath(); ctx.arc(17,-1,2,0,Math.PI*2); ctx.fillStyle='#1a1a1a'; ctx.fill(); break;
+    case 'shark':
+      ctx.beginPath(); ctx.moveTo(28,0);
+      ctx.bezierCurveTo(20,-8,-18,-10,-26,0); ctx.bezierCurveTo(-18,8,20,8,28,0); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(2,-8); ctx.lineTo(10,-24); ctx.lineTo(17,-8); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-5,5); ctx.lineTo(5,18); ctx.lineTo(14,6); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-26,0); ctx.lineTo(-38,-11); ctx.moveTo(-26,0); ctx.lineTo(-38,11); ctx.stroke();
+      ctx.beginPath(); ctx.arc(15,-1,3,0,Math.PI*2); ctx.fillStyle='#1a1a1a'; ctx.fill(); break;
+  }
+  ctx.restore();
+}
+
+on($('btn-cast'),'click',()=>{
+  const c=$('canvas-river'); if(!c) return;
+  const W=c.width, H=c.height;
+  const nr=Math.min(W,H)*.22;
+  const nx=W*.22+Math.random()*W*.56;
+  const ny=H*.18+Math.random()*H*.55;
+  netState={cx:nx,cy:ny,r:nr}; rivCaught.clear();
+  OCEAN_ITEMS.forEach((f,i)=>{
+    const fx=f.x*W, fy=f.y*H;
+    if(Math.sqrt((fx-nx)**2+(fy-ny)**2)<nr) rivCaught.add(i);
+  });
+  const edibleCaught=[...rivCaught].filter(i=>OCEAN_ITEMS[i].isEdible).length;
+  const otherCaught=[...rivCaught].filter(i=>!OCEAN_ITEMS[i].isEdible).length;
+  const totalEdible=OCEAN_ITEMS.filter(f=>f.isEdible).length;
+  const escaped=totalEdible-edibleCaught;
+  const info=$('river-info');
+  if(info) info.innerHTML=`Net caught: <b style="color:#d97706">${edibleCaught} edible fish</b> (out of ${totalEdible}) + <b>${otherCaught} other creatures</b> · Escaped: <b>${escaped}</b> edible fish`;
+});
+
+on($('btn-reset-river'),'click',()=>{
+  netState=null; rivCaught.clear();
+  const info=$('river-info'); if(info) info.textContent='Watch the ocean — then cast the net!';
+});
+
+/* ── DOMAIN → TEST ANIMATION ── */
+let animStep=0, animAlpha=0, animCtx=null;
+const ANIM_LABELS=['Click Next Step to begin','① Domain — the full body of knowledge','② Construct — the concept a test is designed to measure','③ Test — a sample from a specific domain of interest','④ We Infer! — based on the Score, reasoning about the domain'];
+
+function initDomainAnim(){
+  const c=$('canvas-anim'); if(!c) return;
+  const resize=()=>{const r=c.parentElement.getBoundingClientRect();c.width=r.width;c.height=Math.max(r.height,200);};
+  resize(); new ResizeObserver(resize).observe(c.parentElement);
+  animCtx=c.getContext('2d'); requestAnimationFrame(tickAnim);
+}
+
+function tickAnim(){
+  if(animAlpha<1) animAlpha=Math.min(1,animAlpha+.04);
+  const c=$('canvas-anim');
+  if(c&&animCtx) drawAnimFrame(animCtx,c.width,c.height);
+  requestAnimationFrame(tickAnim);
+}
+
+function drawAnimFrame(ctx,W,H){
+  ctx.clearRect(0,0,W,H);
+  const bg=ctx.createLinearGradient(0,0,0,H);
+  bg.addColorStop(0,'#fafafa'); bg.addColorStop(1,'#f3f4f6');
+  ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+  if(animStep===0){
+    ctx.fillStyle='#9ca3af'; ctx.font='15px -apple-system,sans-serif';
+    ctx.textAlign='center'; ctx.fillText('Click "Next Step →" to begin',W/2,H/2); return;
+  }
+  const dCx=W*.28,dCy=H*.42,dR=Math.min(W*.22,H*.30);
+  const tCx=W*.75,tCy=H*.38,tR=dR*.46;
+  /* Step 1+: Domain */
+  if(animStep>=1){
+    ctx.globalAlpha=animStep===1?animAlpha:1;
+    ctx.beginPath(); ctx.arc(dCx,dCy,dR,0,Math.PI*2);
+    ctx.fillStyle='#eff6ff'; ctx.fill();
+    ctx.strokeStyle='#93c5fd'; ctx.lineWidth=2.5; ctx.stroke();
+    ctx.fillStyle='#1d4ed8'; ctx.font='bold 20px -apple-system,sans-serif'; ctx.textAlign='center';
+    ctx.fillText('Domain',dCx,dCy-dR-22);
+    ctx.font='14px -apple-system,sans-serif'; ctx.fillStyle='#3b82f6';
+    ctx.fillText('(full body of knowledge)',dCx,dCy-dR-5);
+    [[-.55,-.30],[.20,-.52],[-.22,.10],[.44,.28],[-.60,.42],[.12,.54],[-.35,-.55],[.52,-.18]].forEach((p,i)=>{
+      drawMinifish(ctx,dCx+p[0]*dR,dCy+p[1]*dR,0.85+(i%3)*.12,'#3b82f6');
+    });
+    ctx.globalAlpha=1;
+  }
+  /* Step 2+: Construct arrow */
+  if(animStep>=2){
+    ctx.globalAlpha=animStep===2?animAlpha:1;
+    const sx=dCx+dR*.65,sy=dCy-dR*.08,ex=tCx-tR-16,ey=tCy;
+    drawArrow(ctx,sx,sy,ex,ey,'#6b7280',2.2);
+    const cmx=(sx+ex)/2, cmy=(sy+ey)/2;
+    ctx.fillStyle='#374151'; ctx.font='bold 15px -apple-system,sans-serif'; ctx.textAlign='center';
+    ctx.fillText('Construct',cmx,cmy-42);
+    ctx.font='12px -apple-system,sans-serif'; ctx.fillStyle='#6b7280';
+    ctx.fillText('The concept or characteristic',cmx,cmy-25);
+    ctx.fillText('a test is designed to measure',cmx,cmy-10);
+    ctx.globalAlpha=1;
+  }
+  /* Step 3+: Test (no CIV zone) */
+  let scbX=0, scbY=0, scbW=0, scbH=0;
+  if(animStep>=3){
+    ctx.globalAlpha=animStep===3?animAlpha:1;
+    ctx.beginPath(); ctx.arc(tCx,tCy,tR,0,Math.PI*2);
+    ctx.fillStyle='#dbeafe'; ctx.fill(); ctx.strokeStyle='#3b82f6'; ctx.lineWidth=2.2; ctx.stroke();
+    ctx.fillStyle='#1d4ed8'; ctx.font='bold 17px -apple-system,sans-serif'; ctx.textAlign='center';
+    ctx.fillText('Test',tCx,tCy-tR-38);
+    ctx.font='13px -apple-system,sans-serif'; ctx.fillStyle='#3b82f6';
+    ctx.fillText('A sample from a specific',tCx,tCy-tR-20);
+    ctx.fillText('domain of interest',tCx,tCy-tR-6);
+    [[-.38,-.25],[.22,.15],[-.10,.38]].forEach(p=>{
+      drawMinifish(ctx,tCx+p[0]*tR,tCy+p[1]*tR,0.72,'#1d4ed8');
+    });
+    /* Score box below the Test circle */
+    scbW=92; scbH=36; scbX=tCx-scbW/2; scbY=tCy+tR+18;
+    ctx.fillStyle='#fef9c3'; ctx.strokeStyle='#eab308'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.roundRect(scbX,scbY,scbW,scbH,7); ctx.fill(); ctx.stroke();
+    ctx.fillStyle='#854d0e'; ctx.font='bold 17px -apple-system,sans-serif'; ctx.textAlign='center';
+    ctx.fillText('Score',tCx,scbY+scbH/2+6);
+    ctx.globalAlpha=1;
+  }
+  /* Step 4+: Infer arrow (from Score) + Validity */
+  if(animStep>=4){
+    ctx.globalAlpha=animStep===4?animAlpha:1;
+    ctx.save();
+    const arcMidX=(dCx+tCx)/2, arcMidY=H*.76;
+    /* Thick, explicit arrow from the Score box to the Domain */
+    ctx.beginPath();
+    ctx.moveTo(scbX+scbW*.18,scbY+scbH);
+    ctx.bezierCurveTo(scbX-30,scbY+scbH+50,dCx+70,dCy+dR+35,dCx+18,dCy+dR+6);
+    ctx.strokeStyle='#059669'; ctx.lineWidth=3.5; ctx.stroke();
+    ctx.fillStyle='#059669'; ctx.beginPath();
+    ctx.moveTo(dCx+18,dCy+dR+6);
+    ctx.lineTo(dCx+34,dCy+dR-9); ctx.lineTo(dCx+4,dCy+dR-6); ctx.closePath(); ctx.fill();
+    /* "We Infer!" label — large */
+    ctx.fillStyle='#065f46'; ctx.font='bold 24px -apple-system,sans-serif'; ctx.textAlign='center';
+    ctx.fillText('We Infer!',arcMidX,arcMidY);
+    ctx.font='14px -apple-system,sans-serif'; ctx.fillStyle='#059669';
+    ctx.fillText('inferences about the larger domain',arcMidX,arcMidY+20);
+    /* VALIDITY badge */
+    const bx=arcMidX, by=arcMidY+38;
+    const bw=252, bh=58, br=8;
+    ctx.fillStyle='#ecfdf5'; ctx.strokeStyle='#6ee7b7'; ctx.lineWidth=1.5;
+    ctx.beginPath();
+    ctx.roundRect(bx-bw/2,by,bw,bh,br);
+    ctx.fill(); ctx.stroke();
+    ctx.fillStyle='#065f46'; ctx.font='bold 17px -apple-system,sans-serif'; ctx.textAlign='center';
+    ctx.fillText('VALIDITY',bx,by+22);
+    ctx.fillStyle='#374151'; ctx.font='13px -apple-system,sans-serif';
+    ctx.fillText('Evidence supports score interpretations',bx,by+44);
+    ctx.restore(); ctx.globalAlpha=1;
+  }
+}
+
+function drawMinifish(ctx,x,y,s,color){
+  ctx.save(); ctx.translate(x,y); ctx.scale(s,s);
+  ctx.strokeStyle=color; ctx.lineWidth=1.5; ctx.fillStyle='rgba(255,255,255,.7)';
+  ctx.beginPath(); ctx.ellipse(0,0,12,5,0,0,Math.PI*2); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(-12,0); ctx.lineTo(-18,-5); ctx.lineTo(-18,5); ctx.closePath(); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.arc(7,-1,1.5,0,Math.PI*2); ctx.fillStyle='#1a1a1a'; ctx.fill();
+  ctx.restore();
+}
+
+function drawArrow(ctx,x1,y1,x2,y2,color,lw){
+  ctx.save(); ctx.strokeStyle=color; ctx.lineWidth=lw;
+  ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+  const a=Math.atan2(y2-y1,x2-x1);
+  ctx.fillStyle=color; ctx.beginPath();
+  ctx.moveTo(x2,y2);
+  ctx.lineTo(x2-10*Math.cos(a-.36),y2-10*Math.sin(a-.36));
+  ctx.lineTo(x2-10*Math.cos(a+.36),y2-10*Math.sin(a+.36));
+  ctx.closePath(); ctx.fill(); ctx.restore();
+}
+
+on($('btn-anim-next'),'click',()=>{
+  if(animStep>=4) return;
+  animStep++; animAlpha=0;
+  for(let i=1;i<=4;i++){const el=document.getElementById('astep-'+i);if(el)el.classList.toggle('active',i===animStep);}
+  const lbl=$('anim-lbl'); if(lbl) lbl.textContent=ANIM_LABELS[animStep]||'';
+  if(animStep>=4){const b=$('btn-anim-next');if(b){b.textContent='Done ✓';b.disabled=true;}}
+});
+
+on($('btn-anim-reset'),'click',()=>{
+  animStep=0; animAlpha=0;
+  for(let i=1;i<=4;i++){const el=document.getElementById('astep-'+i);if(el)el.classList.remove('active');}
+  const lbl=$('anim-lbl'); if(lbl) lbl.textContent='Click Next Step to begin';
+  const b=$('btn-anim-next'); if(b){b.textContent='Next Step →';b.disabled=false;}
+});
+
+/* ── WORKING MEMORY BAR ── */
+// Renders the fixed-capacity Working Memory bar: Intrinsic (blue) + Extraneous (amber) + Germane (violet) = 100%
+function renderWMBar(intrinsic, extraneous, germane){
+  const segs=[
+    {id:'wm-intrinsic', val:intrinsic, lbl:'Intrinsic'},
+    {id:'wm-extraneous', val:extraneous, lbl:'Extraneous'},
+    {id:'wm-germane', val:germane, lbl:'Germane'},
+    {id:'wm-intrinsic-r', val:intrinsic, lbl:'Intrinsic'},
+    {id:'wm-extraneous-r', val:extraneous, lbl:'Extraneous'},
+    {id:'wm-germane-r', val:germane, lbl:'Germane'}
+  ];
+  segs.forEach(seg=>{
+    const el=$(seg.id); if(!el) return;
+    el.style.width=seg.val+'%';
+    el.textContent = seg.val>=10 ? seg.lbl : '';
+  });
+}
+
+/* ── COGNITIVE LOAD BRAIN DIAGRAM ── */
+const CL_DEFS={
+  intrinsic:{
+    title:'Intrinsic Cognitive Load',
+    color:'#1d4ed8',
+    def:'"cognitive load imposed by essential, interacting elements. Complexity of new information. The cognitive demands inherent to the learning task itself"',
+    example:'<em>Test example:</em> figuring out the algebra needed to solve 3x + 5 = 20.',
+    tip:'This is the cost of the content itself — it can be sequenced and scaffolded, but never fully removed.'
+  },
+  extraneous:{
+    title:'Extraneous Cognitive Load',
+    color:'#b45309',
+    def:'"cognitive load imposed by nonessential, interating elements. Distracts working memory from processing new information."',
+    example:'<em>Test example:</em> trying to figure out which icon submits the answer, or what an unfamiliar toolbar symbol does.',
+    tip:'Every bit of this is borrowed from a student’s ability to show what they know.'
+  },
+  germane:{
+    title:'Germane Cognitive Load',
+    color:'#6d28d9',
+    def:'"Cognitive load assumed to contribute to the total load of a task, occurs with the mental activity required to connect an element to other learned elements and, more broadly, to existing schemata, thereby solidifying or expanding the learner’s schemata, Deep processing of new infromation by integrating it with previous learning"',
+    example:'<em>Test example:</em> realizing this problem is structured just like one you solved last week, and using that connection to solve it faster.',
+    tip:'A clean interface leaves room for this kind of thinking — a cluttered one doesn’t.'
+  }
+};
+let clLocked=null;
+function setCLDisplay(key){
+  document.querySelectorAll('.cl-zone, .cl-zone-label').forEach(z=>z.classList.remove('cl-dim','cl-active'));
+  const info=$('cl-info'); if(!info) return;
+  if(!key){
+    info.innerHTML='<span class="diag-placeholder">👆 Hover or click a load type above to see its definition, a test-taking example, and what it means.</span>';
+    return;
+  }
+  document.querySelectorAll('.cl-zone, .cl-zone-label').forEach(z=>{
+    z.classList.add(z.dataset.load===key ? 'cl-active' : 'cl-dim');
+  });
+  const d=CL_DEFS[key];
+  info.innerHTML='<strong style="color:'+d.color+'">'+d.title+'</strong>'
+    +'<p style="margin:.3rem 0">'+d.def+'</p>'
+    +'<p style="margin:.3rem 0">'+d.example+'</p>'
+    +'<p style="margin:.3rem 0 0">'+d.tip+'</p>';
+}
+function hoverCL(key){ if(!clLocked) setCLDisplay(key); }
+function toggleCL(key){ clLocked = (clLocked===key) ? null : key; setCLDisplay(clLocked); }
+document.querySelectorAll('.cl-zone, .cl-zone-label').forEach(el=>{
+  const key=el.dataset.load;
+  el.addEventListener('mouseenter',()=>hoverCL(key));
+  el.addEventListener('mouseleave',()=>hoverCL(clLocked));
+  el.addEventListener('click',()=>toggleCL(key));
+});
+
+/* ── CIV DONUT DRAWING ── */
+function drawCIVDonut(id,valid,civ,err,centerLabel){
+  const c=$(id); if(!c) return;
+  const ctx=c.getContext('2d'),W=c.width,H=c.height;
+  ctx.clearRect(0,0,W,H);
+  const cx=W/2,cy=H/2,r=Math.min(cx,cy)-4,inner=r*.52;
+  const total=valid+civ+err||1;
+  const vA=(valid/total)*Math.PI*2, cA=(civ/total)*Math.PI*2, eA=(err/total)*Math.PI*2;
+  const s=-Math.PI/2;
+  // Valid Measurement (vivid green — matches Part 1)
+  if(valid>0){ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,s,s+vA);ctx.closePath();ctx.fillStyle='#16a34a';ctx.fill();}
+  // Construct-Irrelevant Variance (amber — matches Part 1)
+  if(civ>0){ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,s+vA,s+vA+cA);ctx.closePath();ctx.fillStyle='#d97706';ctx.fill();}
+  // Error (red — matches Part 1)
+  if(err>0){ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,s+vA+cA,s+vA+cA+eA);ctx.closePath();ctx.fillStyle='#dc2626';ctx.fill();}
+  // Donut hole
+  ctx.beginPath();ctx.arc(cx,cy,inner,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();
+  // Outer ring
+  ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.strokeStyle='#e5e7eb';ctx.lineWidth=.8;ctx.stroke();
+  // Center text
+  if(centerLabel){
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillStyle='#9ca3af';ctx.font=`600 ${Math.round(r*.155)}px -apple-system,sans-serif`;
+    ctx.fillText('VALIDITY',cx,cy-r*.155);
+    ctx.fillStyle='#1a1a1a';ctx.font=`700 ${Math.round(r*.21)}px -apple-system,sans-serif`;
+    ctx.fillText(centerLabel,cx,cy+r*.14);
+  }
+}
+
+/* ── CIV SLIDER LEVELS ── */
+// wm: how the fixed Working Memory bar is partitioned (intrinsic + extraneous + germane = 100)
+const CIV_LEVELS=[
+  {valid:90,civ:5, err:5, lbl:'Simple',  badge:'GOOD VALIDITY',       bBg:'#d1fae5',bFg:'#166534',validity:'Good',       wm:{i:41,e:22,g:37}, desc:'Minor interface elements add a small layer of noise to the score.'},
+  {valid:70,civ:25,err:5, lbl:'Complex', badge:'POOR VALIDITY',       bBg:'#fee2e2',bFg:'#991b1b',validity:'Poor',       wm:{i:37,e:51,g:12}, desc:'Interface navigation competes equally with math ability in the score composition.'},
+  {valid:45,civ:50,err:5, lbl:'Chaotic', badge:'LOW VALIDITY',        bBg:'#fecaca',bFg:'#7f1d1d',validity:'Low',        wm:{i:35,e:60,g:5},  desc:'More than half the score measures interface fluency, not the construct. The interface has become the test.'},
+];
+function renderCIVLevel(lvl){
+  const d=CIV_LEVELS[lvl-1];
+  drawCIVDonut('donut-civ',d.valid,d.civ,d.err,d.validity);
+  renderWMBar(d.wm.i,d.wm.e,d.wm.g);
+  const badge=$('civ-badge');
+  if(badge){badge.textContent=d.badge;badge.style.background=d.bBg;badge.style.color=d.bFg;}
+  const vp=$('civ-valid-pct'); if(vp) vp.textContent='Reflects math ability';
+  const cp=$('civ-civ-pct');   if(cp) cp.textContent='UI noise';
+  const ep=$('civ-err-pct');   if(ep) ep.textContent='Random noise';
+  const dp=$('civ-desc');      if(dp) dp.textContent=d.desc;
+  const ll=$('civ-lvl-lbl');   if(ll) ll.textContent='Level '+lvl+' — '+d.lbl;
+  const ll2=$('civ-lvl-lbl-r'); if(ll2) ll2.textContent='Level '+lvl+' — '+d.lbl;
+}
+
+/* ── GLOSSARY POPUP ── */
+const GLOSS_DEFS={
+  'Domain':'Body of knowledge, skills, and abilities that a test is designed to measure. No test can ever capture all of it — like the entire Pacific Ocean.',
+  'Test':'A sample drawn from a specific domain of interest, used to make inferences about the domain not directly tested.',
+  'Item':'Tasks or problems a test-taker is asked to solve. The building blocks of tests — like individual fish in the net.',
+  'Construct':'An abstract attribute that measures some aspect of knowledge; cannot be directly observed. The edible fish species in our Pacific Ocean analogy.',
+  'CIV':'Construct-Irrelevant Variance — variance from factors systematically unrelated to the construct. Cluttered UI, ambiguous icons, or unclear instructions all introduce CIV. This is the designer\'s responsibility.',
+  'CU':'Construct Underrepresentation — when a test fails to capture important aspects of the construct. Like edible fish that escaped the net.',
+  'Validity':'The degree to which inferences from a test score are supported by evidence and theory (AERA, APA, NCME, 2014, p. 11).',
+};
+const glossPopup=$('gloss-popup');
+document.querySelectorAll('.gloss').forEach(el=>{
+  el.addEventListener('mouseenter',function(e){
+    const def=GLOSS_DEFS[this.dataset.term]; if(!def||!glossPopup) return;
+    const name=this.dataset.term==='CIV'?'Construct-Irrelevant Variance':
+               this.dataset.term==='CU'?'Construct Underrepresentation':this.dataset.term;
+    glossPopup.innerHTML='<strong>'+name+'</strong><br>'+def;
+    glossPopup.style.display='block'; positionGloss(e);
+  });
+  el.addEventListener('mousemove',positionGloss);
+  el.addEventListener('mouseleave',function(){if(glossPopup)glossPopup.style.display='none';});
+});
+function positionGloss(e){
+  if(!glossPopup) return;
+  let x=e.clientX+14,y=e.clientY+14;
+  const pw=glossPopup.offsetWidth||290,ph=glossPopup.offsetHeight||80;
+  if(x+pw>window.innerWidth-10) x=e.clientX-pw-10;
+  if(y+ph>window.innerHeight-10) y=e.clientY-ph-10;
+  glossPopup.style.left=x+'px'; glossPopup.style.top=y+'px';
+}
+
+/* ── DIAGRAM 2: SCORE COMPOSI
+TION CLICK INFO ── */
+const D2_DEFS={
+  cu:{
+    title:'Construct Under-representation',
+    color:'#166534',
+    bullets:[
+      'Failure of the test to account for important facets relevant to the purpose of the testing.',
+      'The extent to which a test fails to capture important aspects of the construct domain that the test is intended to measure, resulting in test scores that do not fully represent that construct.'
+    ]
+  },
+  civ:{
+    title:'Construct-Irrelevant Variance',
+    color:'#d97706',
+    bullets:[
+      'Aspects of the test and the testing process that are not relevant to the purpose of the test scores.',
+      'Variance in test-taker scores that is attributable to extraneous factors that distort the meaning of the scores and thereby decrease the validity of the proposed interpretation.'
+    ],
+    extra:`<div style="margin-top:.5rem;padding-top:.45rem;border-top:1px solid var(--gray-100)">
+      <svg viewBox="0 0 540 142" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:420px;display:block;margin:0 auto" font-family="-apple-system,sans-serif">
+        <defs>
+          <pattern id="civ-net-mesh" width="11" height="11" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+            <line x1="0" y1="0" x2="0" y2="11" stroke="#d1d5db" stroke-width="1"/>
+          </pattern>
+        </defs>
+        <text x="270" y="18" text-anchor="middle" font-size="11" font-weight="700" fill="#9ca3af" letter-spacing="1.5">WHAT THE NET (THE TEST) ACTUALLY CATCHES</text>
+        <path d="M 150 45 L 390 45 C 401 94 380 135 270 140 C 160 135 139 94 150 45 Z" fill="#f9fafb"/>
+        <path d="M 150 45 L 390 45 C 401 94 380 135 270 140 C 160 135 139 94 150 45 Z" fill="url(#civ-net-mesh)" stroke="#9ca3af" stroke-width="2.5"/>
+        <line x1="150" y1="45" x2="390" y2="45" stroke="#6b7280" stroke-width="2.5" stroke-dasharray="6,4"/>
+        <g transform="translate(210,95) rotate(-10)">
+          <path d="M -16 0 L -25 -7 L -25 7 Z" fill="rgba(252,211,77,.95)" stroke="#d97706" stroke-width="1.5" stroke-linejoin="round"/>
+          <ellipse cx="0" cy="0" rx="16" ry="9" fill="rgba(252,211,77,.95)" stroke="#d97706" stroke-width="1.5"/>
+          <circle cx="7" cy="-2" r="1.6" fill="#92400e"/>
+        </g>
+        <g transform="translate(322,103) rotate(13)">
+          <path d="M -15 0 L -23 -6.5 L -23 6.5 Z" fill="rgba(252,211,77,.95)" stroke="#d97706" stroke-width="1.5" stroke-linejoin="round"/>
+          <ellipse cx="0" cy="0" rx="15" ry="8.5" fill="rgba(252,211,77,.95)" stroke="#d97706" stroke-width="1.5"/>
+          <circle cx="6.5" cy="-2" r="1.5" fill="#92400e"/>
+        </g>
+        <g transform="translate(262,76) rotate(-6)">
+          <path d="M -14 0 L -22 -6 L -22 6 Z" fill="rgba(229,231,235,.95)" stroke="#9ca3af" stroke-width="1.5" stroke-linejoin="round"/>
+          <ellipse cx="0" cy="0" rx="14" ry="8" fill="rgba(229,231,235,.95)" stroke="#9ca3af" stroke-width="1.5"/>
+          <circle cx="6" cy="-1.5" r="1.4" fill="#6b7280"/>
+        </g>
+        <g transform="translate(190,72)">
+          <path d="M -9 -10 L 9 -10 L 7 11 L -7 11 Z" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1.5" stroke-linejoin="round"/>
+          <line x1="-11" y1="-10" x2="11" y2="-10" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="-4" y1="-13" x2="4" y2="-13" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="-4" y1="-6" x2="-3" y2="6" stroke="#9ca3af" stroke-width="1"/>
+          <line x1="0" y1="-6" x2="0" y2="6" stroke="#9ca3af" stroke-width="1"/>
+          <line x1="4" y1="-6" x2="3" y2="6" stroke="#9ca3af" stroke-width="1"/>
+        </g>
+        <g transform="translate(345,80) rotate(8)">
+          <path d="M -12 -10 L -4 -10 L -4 2 L 10 2 L 12 8 L -12 8 Z" fill="#d6d3d1" stroke="#78716c" stroke-width="1.5" stroke-linejoin="round"/>
+          <line x1="-12" y1="-3" x2="-4" y2="-3" stroke="#78716c" stroke-width="1"/>
+        </g>
+      </svg>
+      <p style="text-align:center;font-size:.7rem;font-style:italic;color:var(--gray-400);margin:.2rem 0 0">Everything that lands in the net, whether or not it belongs to the construct</p>
+      <div style="display:flex;gap:1rem;margin-top:.4rem;font-size:.72rem;line-height:1.5;color:var(--gray-600)">
+        <div style="flex:1;display:flex;gap:.45rem;align-items:flex-start">
+          <span style="flex-shrink:0;width:13px;height:13px;border-radius:50%;margin-top:.15rem;background:rgba(252,211,77,.95);border:1.5px solid #d97706"></span>
+          <span><strong style="color:#15803d">Edible fish</strong> = the construct — what the test is meant to measure (Valid Measurement)</span>
+        </div>
+        <div style="flex:1;display:flex;gap:.45rem;align-items:flex-start">
+          <span style="flex-shrink:0;width:13px;height:13px;border-radius:50%;margin-top:.15rem;background:#e5e7eb;border:1.5px solid #9ca3af"></span>
+          <span><strong style="color:#b45309">Trash and non-edible catch</strong> = Construct-Irrelevant Variance — caught by the test, but unrelated to the construct</span>
+        </div>
+      </div>
+    </div>`
+  }
+};
+function showD2(key){
+  const box=$('d2-info'); const d=D2_DEFS[key]; if(!box||!d) return;
+  box.innerHTML='<strong style="color:'+d.color+'">'+d.title+'</strong><ul>'+d.bullets.map(b=>'<li>'+b+'</li>').join('')+'</ul>'+(d.extra||'');
+  document.querySelectorAll('#vp-diagram2 .diag-zone').forEach(z=>z.classList.remove('d2-selected'));
+  const z=$('d2-'+key); if(z) z.classList.add('d2-selected');
+}
+
+/* ── DIAGRAM 2: CONSTRUCT / TRUE SCORE / OBSERVED SCORE GROUP HIGHLIGHTS ── */
+// Each group's "rects" get bolded (d2-emph) and every OTHER box gets grayed out (d2-dim).
+const D2_ALL_RECTS=['d2-cu-rect','d2-vm-rect','d2-civ-rect','d2-error-rect'];
+const D2_ALL_BOXES=['d2-cu','d2-vm-group','d2-civ','d2-error-group'];
+const D2_GROUPS={
+  construct:{rects:['d2-cu-rect','d2-vm-rect'],boxes:['d2-cu','d2-vm-group']},
+  truescore:{rects:['d2-vm-rect','d2-civ-rect'],boxes:['d2-vm-group','d2-civ']},
+  score:{rects:['d2-vm-rect','d2-civ-rect','d2-error-rect'],boxes:['d2-vm-group','d2-civ','d2-error-group']}
+};
+const D2_TEXT_TRIGGER_IDS={construct:'d2-text-construct',truescore:'d2-text-truescore',score:'d2-text-score'};
+function clearD2Groups(){
+  document.querySelectorAll('#vp-diagram2 .d2-bracket').forEach(g=>g.classList.remove('d2-active'));
+  Object.values(D2_TEXT_TRIGGER_IDS).forEach(id=>{const el=$(id); if(el) el.classList.remove('d2-active');});
+  D2_ALL_RECTS.forEach(id=>{const el=$(id); if(el) el.classList.remove('d2-emph');});
+  D2_ALL_BOXES.forEach(id=>{const el=$(id); if(el) el.classList.remove('d2-dim');});
+}
+function toggleD2Group(name,groupEl){
+  const wasActive=groupEl.classList.contains('d2-active');
+  clearD2Groups();
+  if(wasActive) return;
+  groupEl.classList.add('d2-active');
+  const textEl=$(D2_TEXT_TRIGGER_IDS[name]); if(textEl) textEl.classList.add('d2-active');
+  const g=D2_GROUPS[name];
+  g.rects.forEach(id=>{const el=$(id); if(el) el.classList.add('d2-emph');});
+  D2_ALL_BOXES.filter(id=>!g.boxes.includes(id)).forEach(id=>{const el=$(id); if(el) el.classList.add('d2-dim');});
+}
+function toggleD2GroupByName(name){
+  const groupEl=$('d2-'+name+'-group'); if(!groupEl) return;
+  toggleD2Group(name,groupEl);
+}
+const d2ConstructGroup=$('d2-construct-group');
+if(d2ConstructGroup){
+  d2ConstructGroup.addEventListener('click',()=>toggleD2Group('construct',d2ConstructGroup));
+}
+const d2TrueScoreGroup=$('d2-truescore-group');
+if(d2TrueScoreGroup){
+  const vmRect=$('d2-vm-rect'), civRect=$('d2-civ-rect');
+  d2TrueScoreGroup.addEventListener('mouseenter',()=>{
+    if(vmRect) vmRect.classList.add('d2-emph');
+    if(civRect) civRect.classList.add('d2-emph');
+  });
+  d2TrueScoreGroup.addEventListener('mouseleave',()=>{
+    if(d2TrueScoreGroup.classList.contains('d2-active')) return;
+    if(vmRect) vmRect.classList.remove('d2-emph');
+    if(civRect) civRect.classList.remove('d2-emph');
+  });
+  d2TrueScoreGroup.addEventListener('click',()=>toggleD2Group('truescore',d2TrueScoreGroup));
+}
+const d2ScoreGroup=$('d2-score-group');
+if(d2ScoreGroup){
+  d2ScoreGroup.addEventListener('click',()=>toggleD2Group('score',d2ScoreGroup));
+}
+
+initRiver();
+initDomainAnim();
+
+/* ── CIV SLIDER INIT ── */
+const cplxSlider=$('cplx-slider');
+const cplxSliderR=$('cplx-slider-r');
+function setCplxLevel(lvl){
+  if(cplxSlider) cplxSlider.value=lvl;
+  if(cplxSliderR) cplxSliderR.value=lvl;
+  renderCIVLevel(lvl);
+}
+if(cplxSlider) cplxSlider.addEventListener('input',()=>setCplxLevel(+cplxSlider.value));
+if(cplxSliderR) cplxSliderR.addEventListener('input',()=>setCplxLevel(+cplxSliderR.value));
+setCplxLevel(1);
+// Draw intro donut when vp-diagram2 becomes visible
+(function(){
+  const vp2=$('vp-diagram2');
+  if(!vp2) return;
+  // Draw immediately (canvas always has fixed w/h attrs)
+  drawCIVDonut('donut-intro',75,17,8,null);
+  // Also redraw on activation in case of resize
+  new MutationObserver(m=>m.forEach(x=>{
+    if(x.target.classList.contains('active')) drawCIVDonut('donut-intro',75,17,8,null);
+  })).observe(vp2,{attributeFilter:['class']});
+})();
+
+/* ── DISTANCE VS TIME GRAPHS ── */
+function arrowHead(ctx,x1,y1,x2,y2,color){
+  const ang=Math.atan2(y2-y1,x2-x1), len=6;
+  ctx.beginPath();
+  ctx.moveTo(x2,y2);
+  ctx.lineTo(x2-len*Math.cos(ang-Math.PI/6), y2-len*Math.sin(ang-Math.PI/6));
+  ctx.lineTo(x2-len*Math.cos(ang+Math.PI/6), y2-len*Math.sin(ang+Math.PI/6));
+  ctx.closePath();
+  ctx.fillStyle=color; ctx.fill();
+}
+function drawDistGraph(id,arrow){
+  const c=$(id); if(!c) return;
+  const ctx=c.getContext('2d'),W=c.width,H=c.height;
+  const L=32,R=14,T=16,B=24,pw=W-L-R,ph=H-T-B,cols=8,rows=8,cw=pw/cols,ch=ph/rows,ox=L,oy=H-B;
+  ctx.clearRect(0,0,W,H); ctx.fillStyle='#fff'; ctx.fillRect(0,0,W,H);
+  /* gridlines */
+  ctx.strokeStyle='#e5e7eb'; ctx.lineWidth=1;
+  for(let i=0;i<=cols;i++){const x=L+i*cw;ctx.beginPath();ctx.moveTo(x,T);ctx.lineTo(x,oy);ctx.stroke();}
+  for(let i=0;i<=rows;i++){const y=T+i*ch;ctx.beginPath();ctx.moveTo(L,y);ctx.lineTo(L+pw,y);ctx.stroke();}
+  /* axes */
+  ctx.strokeStyle='#374151'; ctx.lineWidth=1.3;
+  ctx.beginPath();ctx.moveTo(L,oy);ctx.lineTo(L+pw+5,oy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(L,oy);ctx.lineTo(L,T-5);ctx.stroke();
+  arrowHead(ctx,L,oy+1,L+pw+5,oy,'#374151');
+  arrowHead(ctx,L,oy+1,L,T-5,'#374151');
+  /* tick labels */
+  ctx.fillStyle='#9ca3af'; ctx.font='6.5px -apple-system,sans-serif'; ctx.textAlign='right';
+  for(let i=1;i<=rows;i++) ctx.fillText(String(i*10), L-4, oy-i*ch+3);
+  ctx.textAlign='center';
+  for(let i=0;i<=cols;i++) ctx.fillText(String(i), L+i*cw, oy+11);
+  /* axis variable labels */
+  ctx.font='italic 8px -apple-system,sans-serif'; ctx.fillStyle='#374151';
+  ctx.textAlign='left'; ctx.fillText('d', L-2, T-7);
+  ctx.fillText('t', L+pw+8, oy+3);
+  /* axis names */
+  ctx.font='7px -apple-system,sans-serif'; ctx.fillStyle='#9ca3af'; ctx.textAlign='center';
+  ctx.fillText('Time (sec)', L+pw/2, H-3);
+  ctx.save(); ctx.translate(8,T+ph/2); ctx.rotate(-Math.PI/2); ctx.fillText('Distance (m)',0,0); ctx.restore();
+  /* title */
+  ctx.font='bold 8.5px -apple-system,sans-serif'; ctx.fillStyle='#1a1a1a'; ctx.textAlign='center';
+  ctx.fillText('Distance vs. Time', L+pw/2, 9);
+  /* user-drawn arrow: simple form {t,d} draws a line from the origin */
+  if(arrow && arrow.t!==undefined){
+    const ex=L+arrow.t*cw, ey=oy-(arrow.d/10)*ch;
+    ctx.strokeStyle='#1d4ed8'; ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ex,ey);ctx.stroke();
+    arrowHead(ctx,ox,oy,ex,ey,'#1d4ed8');
+  }
+  /* two-point form {points:[{t,d}|null,{t,d}|null], line:bool, preview:{x,y}|null} */
+  if(arrow && arrow.points){
+    const toPix=p=>({x:L+p.t*cw,y:oy-(p.d/10)*ch});
+    const pix=arrow.points.map(p=>p?toPix(p):null);
+    if(arrow.line && pix[0] && pix[1]){
+      ctx.strokeStyle='#1d4ed8'; ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(pix[0].x,pix[0].y);ctx.lineTo(pix[1].x,pix[1].y);ctx.stroke();
+      arrowHead(ctx,pix[0].x,pix[0].y,pix[1].x,pix[1].y,'#1d4ed8');
+    }
+    /* live drag preview while placing the second point */
+    if(arrow.preview && pix[0] && !pix[1]){
+      ctx.save();
+      ctx.strokeStyle='#93c5fd'; ctx.lineWidth=2; ctx.setLineDash([4,3]);
+      ctx.beginPath();ctx.moveTo(pix[0].x,pix[0].y);ctx.lineTo(arrow.preview.x,arrow.preview.y);ctx.stroke();
+      ctx.restore();
+      arrowHead(ctx,pix[0].x,pix[0].y,arrow.preview.x,arrow.preview.y,'#93c5fd');
+    }
+    pix.forEach(p=>{
+      if(!p) return;
+      ctx.beginPath();ctx.arc(p.x,p.y,4,0,Math.PI*2);ctx.fillStyle='#1d4ed8';ctx.fill();
+      ctx.strokeStyle='#fff';ctx.lineWidth=1.2;ctx.stroke();
+    });
+  }
+}
+['dist-orig','dist-cmp-o','dist-cmp-i'].forEach(id=>drawDistGraph(id,null));
+
+/* Redesigned interaction: click+drag+release on the grid draws the line directly
+   (no "Add Arrow" step needed); "Delete" clears the whole drawing in one click. */
+function wireDirectDraw(canvasId,delBtnId,hintId){
+  const c=$(canvasId); if(!c) return;
+  const delBtn=$(delBtnId), hint=$(hintId);
+  const L=32,R=14,T=16,B=24,pw=c.width-L-R,ph=c.height-T-B,cw=pw/8,ch=ph/8,oy=c.height-B;
+  let points=[null,null], hasLine=false, dragging=false, previewPix=null;
+  function snap(px,py){
+    let t=Math.round((px-L)/cw), d=Math.round((oy-py)/ch)*10;
+    t=Math.max(0,Math.min(8,t)); d=Math.max(0,Math.min(80,d));
+    return {t,d};
+  }
+  function render(){ drawDistGraph(canvasId,{points,line:hasLine,preview:dragging?previewPix:null}); }
+  function setHint(){
+    if(!hint) return;
+    hint.textContent = hasLine ? 'Click "Delete" to clear and redraw' : 'Click and drag on the grid to draw a line';
+  }
+  if(delBtn) delBtn.addEventListener('click',()=>{ points=[null,null]; hasLine=false; setHint(); render(); });
+  c.addEventListener('mousedown',e=>{
+    const rect=c.getBoundingClientRect(),sx=c.width/rect.width,sy=c.height/rect.height;
+    const px=(e.clientX-rect.left)*sx,py=(e.clientY-rect.top)*sy;
+    points=[snap(px,py),null]; hasLine=false; dragging=true; previewPix={x:px,y:py};
+    render();
+  });
+  window.addEventListener('mousemove',e=>{
+    if(!dragging) return;
+    const rect=c.getBoundingClientRect(),sx=c.width/rect.width,sy=c.height/rect.height;
+    previewPix={x:(e.clientX-rect.left)*sx,y:(e.clientY-rect.top)*sy};
+    render();
+  });
+  window.addEventListener('mouseup',e=>{
+    if(!dragging) return;
+    dragging=false;
+    const rect=c.getBoundingClientRect(),sx=c.width/rect.width,sy=c.height/rect.height;
+    const px=(e.clientX-rect.left)*sx,py=(e.clientY-rect.top)*sy;
+    const p1=snap(px,py);
+    if(p1.t!==points[0].t||p1.d!==points[0].d){ points[1]=p1; hasLine=true; }
+    else points=[null,null];
+    previewPix=null; setHint(); render();
+  });
+  setHint();
+}
+wireDirectDraw('dist-cmp-i','delBtn-cmp-i','dist-hint-cmp-i');
+
+/* distance from point (px,py) to segment (x1,y1)-(x2,y2) */
+function distToSegment(px,py,x1,y1,x2,y2){
+  const dx=x2-x1,dy=y2-y1,len2=dx*dx+dy*dy;
+  let t=len2===0?0:((px-x1)*dx+(py-y1)*dy)/len2;
+  t=Math.max(0,Math.min(1,t));
+  return Math.hypot(px-(x1+t*dx),py-(y1+t*dy));
+}
+
+/* "Add Arrow" / "Delete" tool interaction (multi-step, used by the Original mockup):
+   - Add Arrow must be activated before any clicks register.
+   - Add Arrow: click two points to draw the connecting arrow, then it auto-deactivates.
+   - Delete: clicking the line removes only the line; clicking a point removes that
+     point AND the line, leaving the other point — full clear takes 3 clicks. */
+function wireSbacInteraction(canvasId,addBtnId,delBtnId,hintId){
+  const c=$(canvasId); if(!c) return;
+  const addBtn=$(addBtnId), delBtn=$(delBtnId), hint=$(hintId);
+  const L=32,R=14,T=16,B=24,pw=c.width-L-R,ph=c.height-T-B,cw=pw/8,ch=ph/8,oy=c.height-B;
+  const DEFAULT_HINT='Select "Add Arrow," then click the grid';
+  let mode=null, points=[null,null], hasLine=false, previewPix=null;
+  const toPix=p=>({x:L+p.t*cw,y:oy-(p.d/10)*ch});
+  function render(){
+    const preview=(mode==='add'&&points[0]&&!points[1])?previewPix:null;
+    drawDistGraph(canvasId,{points,line:hasLine,preview});
+  }
+  function setHint(){
+    if(!hint) return;
+    if(mode==='add') hint.textContent = !points[0] ? 'Click a point on the grid'
+      : 'Click a second point to draw the arrow';
+    else if(mode==='delete') hint.textContent='Click the line or a point to remove it';
+    else hint.textContent=DEFAULT_HINT;
+  }
+  if(addBtn) addBtn.addEventListener('click',()=>{
+    if(mode==='add'){ mode=null; }
+    else{
+      mode='add';
+      if(points[0]&&points[1]){ points=[null,null]; hasLine=false; }
+      if(delBtn) delBtn.classList.remove('tool-on');
+    }
+    addBtn.classList.toggle('tool-on',mode==='add');
+    setHint(); render();
+  });
+  if(delBtn) delBtn.addEventListener('click',()=>{
+    mode = mode==='delete' ? null : 'delete';
+    delBtn.classList.toggle('tool-on',mode==='delete');
+    if(addBtn) addBtn.classList.remove('tool-on');
+    setHint(); render();
+  });
+  c.addEventListener('click',e=>{
+    if(!mode) return;
+    const rect=c.getBoundingClientRect(),sx=c.width/rect.width,sy=c.height/rect.height;
+    const px=(e.clientX-rect.left)*sx,py=(e.clientY-rect.top)*sy;
+    if(mode==='add'){
+      if(points[0]&&points[1]) return;
+      let t=Math.round((px-L)/cw), d=Math.round((oy-py)/ch)*10;
+      t=Math.max(0,Math.min(8,t)); d=Math.max(0,Math.min(80,d));
+      if(!points[0]) points[0]={t,d};
+      else{ points[1]={t,d}; hasLine=true; mode=null; previewPix=null; addBtn.classList.remove('tool-on'); }
+      setHint(); render();
+      return;
+    }
+    if(mode==='delete'){
+      for(let i=0;i<2;i++){
+        const p=points[i]; if(!p) continue;
+        const pp=toPix(p);
+        if(Math.hypot(px-pp.x,py-pp.y)<=8){ points[i]=null; hasLine=false; render(); return; }
+      }
+      if(hasLine&&points[0]&&points[1]){
+        const a=toPix(points[0]),b=toPix(points[1]);
+        if(distToSegment(px,py,a.x,a.y,b.x,b.y)<=6){ hasLine=false; render(); return; }
+      }
+    }
+  });
+  c.addEventListener('mousemove',e=>{
+    if(mode!=='add'||!points[0]||points[1]) return;
+    const rect=c.getBoundingClientRect(),sx=c.width/rect.width,sy=c.height/rect.height;
+    previewPix={x:(e.clientX-rect.left)*sx,y:(e.clientY-rect.top)*sy};
+    render();
+  });
+  c.addEventListener('mouseleave',()=>{
+    if(!previewPix) return;
+    previewPix=null;
+    render();
+  });
+  setHint();
+}
+wireSbacInteraction('dist-orig','arrowBtn-orig','delBtn-orig','dist-hint-orig');
+wireSbacInteraction('dist-cmp-o','arrowBtn-cmp-o','delBtn-cmp-o','dist-hint-cmp-o');
+
+/* ── INTERACTION-FLOW DIAGRAM (Part 3, section 2) ── */
+(function(){
+  const gOrig=$('flow-group-orig'), gRedesign=$('flow-group-redesign');
+  const tabOrig=$('flow-tab-orig'), tabRedesign=$('flow-tab-redesign');
+  const btnNext=$('flow-next'), btnReplay=$('flow-replay'), lbl=$('flow-lbl');
+  if(!gOrig||!gRedesign) return;
+  const MAX={orig:5,redesign:3};
+  const LABELS={
+    orig:['Click "Next Step" to begin','① "Add Arrow" button → click it','② Click a point on the grid → drag → release','③ "Delete" button → click it','④ Click the line → only the line is removed','⑤ Click a point → point + line removed (other point remains)'],
+    redesign:['Click "Next Step" to begin','① Skip "Add Arrow" — click the grid, drag, release to draw','② Click "Delete" — the line disappears immediately','③ Only two interactions are needed']
+  };
+  /* Left-text highlights, synced to the colors used in the SVG flowchart */
+  const TEXT_HL={
+    orig:{
+      1:[['txt-orig-1','hl-signifier'],['txt-orig-2','hl-action']],
+      3:[['txt-orig-3','hl-signifier']],
+      4:[['txt-orig-4','hl-action']],
+      5:[['txt-orig-5','hl-action'],['txt-orig-problem','hl-problem']]
+    },
+    redesign:{
+      1:[['txt-redesign-1','hl-kept']],
+      2:[['txt-redesign-2','hl-kept']],
+      3:[['txt-redesign-final','hl-kept']]
+    }
+  };
+  const ALL_TEXT_IDS=['txt-orig-1','txt-orig-2','txt-orig-3','txt-orig-4','txt-orig-5','txt-orig-problem','txt-redesign-1','txt-redesign-2','txt-redesign-final'];
+  function clearTextHL(){
+    ALL_TEXT_IDS.forEach(id=>{ const el=$(id); if(el) el.classList.remove('hl-signifier','hl-action','hl-kept','hl-problem'); });
+  }
+  let mode='orig', step=0;
+  function render(){
+    const group=mode==='orig'?gOrig:gRedesign;
+    group.querySelectorAll('.fnode').forEach(n=>n.classList.toggle('show', +n.dataset.step<=step));
+    if(lbl) lbl.textContent=LABELS[mode][step]||'';
+    if(btnNext){
+      btnNext.disabled=step>=MAX[mode];
+      btnNext.textContent=step>=MAX[mode]?'Done ✓':'Next Step →';
+    }
+    clearTextHL();
+    const map=TEXT_HL[mode];
+    for(let s=1;s<=step;s++){ (map[s]||[]).forEach(([id,cls])=>{ const el=$(id); if(el) el.classList.add(cls); }); }
+  }
+  function setMode(m){
+    mode=m; step=0;
+    gOrig.style.display=m==='orig'?'':'none';
+    gRedesign.style.display=m==='redesign'?'':'none';
+    if(tabOrig) tabOrig.classList.toggle('active', m==='orig');
+    if(tabRedesign) tabRedesign.classList.toggle('active', m==='redesign');
+    gOrig.querySelectorAll('.fnode').forEach(n=>n.classList.remove('show'));
+    gRedesign.querySelectorAll('.fnode').forEach(n=>n.classList.remove('show'));
+    render();
+  }
+  on(btnNext,'click',()=>{ if(step<MAX[mode]){ step++; render(); } });
+  on(btnReplay,'click',()=>{ step=0; group_clear(); render(); });
+  function group_clear(){ (mode==='orig'?gOrig:gRedesign).querySelectorAll('.fnode').forEach(n=>n.classList.remove('show')); }
+  on(tabOrig,'click',()=>setMode('orig'));
+  on(tabRedesign,'click',()=>setMode('redesign'));
+  setMode('orig');
+})();
+
+/* ── SBAC TOGGLE ── */
+on($('btn-orig'),'click',()=>{
+  $('btn-orig').classList.add('active');$('btn-impr').classList.remove('active');
+  $('cmp-orig').style.display='';$('cmp-impr').style.display='none';
+  $('cmp-note').textContent='Original: "Add Arrow" → click two points to draw · "Delete" → click line, then click each dot — 3 clicks to fully clear';
+});
+on($('btn-impr'),'click',()=>{
+  $('btn-impr').classList.add('active');$('btn-orig').classList.remove('active');
+  $('cmp-orig').style.display='none';$('cmp-impr').style.display='';
+  $('cmp-note').textContent='Redesigned: click, drag, and release on the grid to draw · "Delete" clears the whole drawing in one click';
+});
+</script>
+</body>
+</html>
